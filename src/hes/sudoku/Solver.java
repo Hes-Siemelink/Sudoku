@@ -35,6 +35,16 @@ public class Solver {
         printer.out.println("\nAfter:");
         printer.printAllCandidates();
 
+        eliminateBasedOnUniqueSetsInGroup();
+
+        printer.out.println("\nAgain:");
+        printer.printAllCandidates();
+
+        sweep();
+
+        printer.out.println("\nAnd again:");
+        printer.printAllCandidates();
+
         // Print
         printer.out.println("\nPuzzle:");
         printer.printPuzzle();
@@ -148,9 +158,9 @@ public class Solver {
             add(cell.getCandidates(), sets);
         }
 
-        for (Set<Integer> set : sets.keySet()) {
-            if (set.size() == sets.get(set)) {
-                removeOtherDependencies(group, set);
+        for (Map.Entry<Set<Integer>, Integer> entry : sets.entrySet()) {
+            if (entry.getKey().size() == entry.getValue()) {
+                removeOtherDependencies(group, entry.getKey());
             }
         }
     }
@@ -164,6 +174,7 @@ public class Solver {
     }
 
     private <T> void add(T something, Map<T, Integer> count) {
+//        System.out.format("Adding %s to %s\n", something, count);
         if (!count.containsKey(something)) {
             count.put(something, 1);
         } else {
@@ -176,7 +187,7 @@ public class Solver {
     //
     
     public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.MEDIUM);
+        Puzzle puzzle = Puzzle.parse(Samples.EASY);
 
         // Solve
         new Solver(puzzle).solve();

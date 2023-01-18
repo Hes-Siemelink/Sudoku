@@ -2,6 +2,7 @@ package hes.sudoku;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class Printer {
 
@@ -22,13 +23,19 @@ public class Printer {
 
     public void printPuzzle() {
 
+        out.println("+-------+-------+-------+");
         for (int i = 0; i < cells.size(); i++) {
+
+            if (i % 9 == 0) {
+                out.print("| ");
+            }
+
             out.print(cells.get(i).text());
 
             // Block divider
             int next = i + 1;
             if (next % 3 == 0) {
-                out.print("  ");
+                out.print("| ");
             }
 
             // New line
@@ -38,11 +45,10 @@ public class Printer {
 
             // Block line
             if (next % 27 == 0) {
-                out.println();
+                out.println("+-------+-------+-------+");
             }
         }
     }
-
     public void printAllCandidates() {
 
         out.println("+----------------------------+-----------------------------+-----------------------------+");
@@ -80,4 +86,8 @@ public class Printer {
         }
     }
 
+    private static interface CellRenderer {
+        String getText(Cell cell);
+        int width();
+    }
 }
