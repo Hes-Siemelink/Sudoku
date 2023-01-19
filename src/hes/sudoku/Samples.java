@@ -2,6 +2,20 @@ package hes.sudoku;
 
 public class Samples {
 
+    public final static String EMPTY = """
+            . . .   . . .   . . .
+            . . .   . . .   . . .
+            . . .   . . .   . . .
+
+            . . .   . . .   . . .
+            . . .   . . .   . . .
+            . . .   . . .   . . .
+
+            . . .   . . .   . . .
+            . . .   . . .   . . .
+            . . .   . . .   . . .
+            """;
+
     public final static String GOOI_EN_EEMBODE = """
             8 . .   . 1 .   . . 7
             . . .   . . .   . 9 5
@@ -28,20 +42,6 @@ public class Samples {
             . 2 .   . 5 .   . 8 .
             . . .   1 9 .   . . 6
             . . 4   . . .   7 . .
-            """;
-
-    public final static String EMPTY = """
-            . . .   . . .   . . .
-            . . .   . . .   . . .
-            . . .   . . .   . . .
-
-            . . .   . . .   . . .
-            . . .   . . .   . . .
-            . . .   . . .   . . .
-
-            . . .   . . .   . . .
-            . . .   . . .   . . .
-            . . .   . . .   . . .
             """;
 
     public final static String EASY = """

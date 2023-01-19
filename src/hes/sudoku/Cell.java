@@ -10,8 +10,8 @@ public class Cell {
     private boolean known = false;
     private Set<Integer> candidates = new LinkedHashSet<>(9);
 
-    private String name;
-    private Set<Group> groups = new LinkedHashSet<>();
+    private final String name;
+    private final Set<Group> groups = new LinkedHashSet<>();
 
     public Cell(String name) {
         this.name = name;
@@ -29,7 +29,15 @@ public class Cell {
     }
 
     public Set<Integer> getCandidates() {
-        return candidates;
+        return Collections.unmodifiableSet(candidates);
+    }
+
+    public Set<Group> getGroups() {
+        return Collections.unmodifiableSet(groups);
+    }
+
+    public void add(Group group) {
+        groups.add(group);
     }
 
     public void setNumber(Integer number) {
@@ -42,24 +50,12 @@ public class Cell {
         candidates.remove(number);
     }
 
-    public Set<Group> getGroups() {
-        return groups;
-    }
-
     public String text() {
         if (known) {
             return String.valueOf(number) + " ";
         }
 
         return ". ";
-    }
-
-    public int nrOfCandidates() {
-        return candidates.size();
-    }
-
-    public Integer firstCandidate() {
-        return candidates.iterator().next();
     }
 
     public String allCandidatesAsString() {

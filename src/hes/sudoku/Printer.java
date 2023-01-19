@@ -85,9 +85,4 @@ public class Printer {
             out.println(String.format("%s: %s", group, group.candidates()));
         }
     }
-
-    private static interface CellRenderer {
-        String getText(Cell cell);
-        int width();
-    }
 }

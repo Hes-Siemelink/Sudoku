@@ -1,24 +1,23 @@
 package hes.sudoku;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Puzzle {
 
-    private final List<Cell> cells = new ArrayList<>(81);
-    private final List<Group> groups = new ArrayList<>(27);
+    private final List<Cell> cells = initCells();
+    private final List<Group> groups = initGroups();
 
     public Puzzle() {
-        initCells();
-        initGroups();
     }
 
     public List<Cell> getCells() {
-        return cells;
+        return Collections.unmodifiableList(cells);
     }
 
     public List<Group> getGroups() {
-        return groups;
+        return Collections.unmodifiableList(groups);
     }
 
     public List<Group> getBoxes() {
@@ -33,13 +32,17 @@ public class Puzzle {
         return groups.subList(18, 27);
     }
 
-    private void initCells() {
+    private List<Cell> initCells() {
+        List<Cell> cells = new ArrayList<>(81);
         for (int i = 0; i < 81; i++) {
             cells.add(new Cell(String.format("r%sc%s", i / 9 + 1, i % 9 + 1)));
         }
+        return cells;
     }
 
-    private void initGroups() {
+    private List<Group> initGroups() {
+        List<Group> groups = new ArrayList<>(27);
+
         int group = 0;
 
         // Boxes
@@ -62,6 +65,8 @@ public class Puzzle {
         for (int column = 0; column < 9; column++) {
             groups.add(initColumn("Col " + (column + 1), column));
         }
+
+        return groups;
     }
 
     public Group initBox(String name, int startX, int startY) {
@@ -115,7 +120,7 @@ public class Puzzle {
 
         // Update cells
         for (int i = 0; i < groups.size(); i++) {
-            if (groups.get(i).contains(cell)) {
+            if (groups.get(i).getCells().contains(cell)) {
                 groups.get(i).eliminate(number);
             }
         }

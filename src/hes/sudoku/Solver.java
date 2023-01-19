@@ -17,10 +17,14 @@ public class Solver {
         // Print
         printer.printPuzzle();
 
+        long start = System.currentTimeMillis();
+
         // Solve
         sweep();
 
         if (puzzle.isSolved()) {
+            long duration = System.currentTimeMillis() - start;
+            System.out.format("Solved in %s ms.\n", duration);
             printer.out.println("Solution:");
             printer.printPuzzle();
             return;
@@ -91,19 +95,54 @@ public class Solver {
     private Set<Candidate> findByElimination() {
         Set<Candidate> candidates = new LinkedHashSet();
         for (Cell cell : puzzle.getCells()) {
-            if (cell.nrOfCandidates() == 1) {
-                candidates.add(new Candidate(cell, cell.firstCandidate(), "Only possible value for " + cell));
+            if (cell.getCandidates().size() == 1) {
+                candidates.add(new Candidate(cell, getCandidate(cell), "Only possible value for " + cell));
             }
         }
         return candidates;
     }
 
+    public Integer getCandidate(Cell cell) {
+        return cell.getCandidates().iterator().next();
+    }
+
+
     private Set<Candidate> findGhostCandidates() {
         Set<Candidate> candidates = new LinkedHashSet();
         for (Group group : puzzle.getGroups()) {
-            candidates.addAll(group.findGhostCandidates());
+            candidates.addAll(findGhostCandidates(group));
         }
+
         return candidates;
+    }
+
+    public Set<Candidate> findGhostCandidates(Group group) {
+
+        Set<Candidate> candidates = new LinkedHashSet();
+        for (int number = 1; number < 10; number++) {
+            int nrOfCandidates = 0;
+            for (Cell cell : group.getCells()) {
+                if (cell.hasCandidate(number)) {
+                    nrOfCandidates++;
+                }
+            }
+            if (nrOfCandidates == 1) {
+                Cell cell = getFirstGhost(number, group.getCells());
+                candidates.add(new Candidate(cell, number, "Unique candidate in " + group));
+            }
+        }
+
+        return candidates;
+    }
+
+    private Cell getFirstGhost(Integer number, Collection<Cell> cells) {
+        for (Cell cell : cells) {
+            if (cell.hasCandidate(number)) {
+                return cell;
+            }
+        }
+
+        throw new IllegalStateException(String.format("No ghost candidate %s in %s", number, cells));
     }
 
 
@@ -114,21 +153,20 @@ public class Solver {
     private void eliminateCrossGroupDependencies() {
         for (Group group : puzzle.getGroups()) {
             for (int number = 1; number <= 9; number++) {
-                eliminateCrossGroupDependencies(group, puzzle.getBoxes(), number);
-                eliminateCrossGroupDependencies(group, puzzle.getRows(), number);
-                eliminateCrossGroupDependencies(group, puzzle.getColumns(), number);
+                eliminateCrossGroupDependencies(group, number, puzzle.getBoxes());
+                eliminateCrossGroupDependencies(group, number, puzzle.getRows());
+                eliminateCrossGroupDependencies(group, number, puzzle.getColumns());
             }
         }
     }
 
-    private void eliminateCrossGroupDependencies(Group group, List<Group> ignore, Integer number) {
+    private void eliminateCrossGroupDependencies(Group group, Integer number, List<Group> ignore) {
 
-        Set<Group> otherGroups = getOtherGroups(group, number);
+        Set<Group> overlapping = getOverlappingGroupsWithSameNumber(group, number);
+        overlapping.removeAll(ignore);
 
-        otherGroups.remove(group);
-        otherGroups.removeAll(ignore);
-        if (otherGroups.size() == 1) {
-            Group other = otherGroups.iterator().next();
+        if (overlapping.size() == 1) {
+            Group other = overlapping.iterator().next();
             Set<Cell> cells = new LinkedHashSet<>(other.getCells());
             cells.removeAll(group.getCells());
 
@@ -136,15 +174,21 @@ public class Solver {
         }
     }
 
-    private Set<Group> getOtherGroups(Group group, Integer number) {
-        Set<Group> groups = new HashSet<>();
+    private Set<Group> getOverlappingGroupsWithSameNumber(Group group, Integer number) {
+        Set<Group> overlapping = new HashSet<>();
         for (Cell cell : group.getCells()) {
             if (cell.hasCandidate(number)) {
-                groups.addAll(cell.getGroups());
+                overlapping.addAll(cell.getGroups());
             }
         }
-        return groups;
+        overlapping.remove(group);
+
+        return overlapping;
     }
+
+    //
+    //
+    //
 
     private void eliminateBasedOnUniqueSetsInGroup() {
         for (Group group : puzzle.getGroups()) {
@@ -174,7 +218,6 @@ public class Solver {
     }
 
     private <T> void add(T something, Map<T, Integer> count) {
-//        System.out.format("Adding %s to %s\n", something, count);
         if (!count.containsKey(something)) {
             count.put(something, 1);
         } else {
@@ -192,5 +235,4 @@ public class Solver {
         // Solve
         new Solver(puzzle).solve();
     }
-
 }
