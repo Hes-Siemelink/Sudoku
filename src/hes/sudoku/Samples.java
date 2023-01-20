@@ -30,6 +30,20 @@ public class Samples {
             . . .   . 6 8   . 1 .
             """;
 
+    public final static String GOOI_EN_EEMBODE_19_JAN_2023 = """
+            . 9 6   . . .   . . .
+            5 . .   . . .   . 4 .
+            4 . .   . . .   5 . .
+
+            . . 4   . . 3   . 9 2
+            3 1 .   9 . .   . . .
+            8 . .   . . .   . . .
+
+            . . .   . 5 9   . 3 1
+            . 8 .   . . 4   6 . 5
+            . . .   2 . 1   . . .
+            """;
+
     public final static String SIMPLE = """
             . . 3   . . .   1 . .
             2 . .   . 4 7   . . .

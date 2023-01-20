@@ -230,7 +230,7 @@ public class Solver {
     //
     
     public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.EASY);
+        Puzzle puzzle = Puzzle.parse(Samples.GOOI_EN_EEMBODE_19_JAN_2023);
 
         // Solve
         new Solver(puzzle).solve();
