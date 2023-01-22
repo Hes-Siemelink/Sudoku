@@ -2,7 +2,6 @@ package hes.sudoku;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class Printer {
 
@@ -10,6 +9,7 @@ public class Printer {
 
     private final Puzzle puzzle;
     private final List<Cell> cells;
+    private long start = System.currentTimeMillis();
 
     public Printer(Puzzle puzzle) {
         this(puzzle, System.out);
@@ -19,6 +19,18 @@ public class Printer {
         this.puzzle = puzzle;
         this.out = out;
         this.cells = puzzle.getCells();
+    }
+
+    public void printStart() {
+        printPuzzle();
+        start = System.currentTimeMillis();
+    }
+
+    public void printEnd() {
+        long duration = System.currentTimeMillis() - start;
+        System.out.format("Solved in %s ms.\n", duration);
+        out.println("Solution:");
+        printPuzzle();
     }
 
     public void printPuzzle() {

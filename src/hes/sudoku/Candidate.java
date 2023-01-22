@@ -16,4 +16,9 @@ public record Candidate(Cell cell, int number, String reason) {
     public int hashCode() {
         return Objects.hash(cell, number);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s can be filled with %s - %s", cell, number, reason);
+    }
 }

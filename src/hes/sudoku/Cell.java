@@ -20,6 +20,13 @@ public class Cell {
         }
     }
 
+    public Cell(Cell original) {
+        this.number = original.number;
+        this.known = original.known;
+        this.candidates.addAll(original.candidates);
+        this.name = original.name;
+    }
+
     public boolean isKnown() {
         return known;
     }
@@ -50,6 +57,10 @@ public class Cell {
         candidates.remove(number);
     }
 
+    public void removeCandidates(Set<Integer> invalidCandidates) {
+        candidates.removeAll(invalidCandidates);
+
+    }
     public String text() {
         if (known) {
             return String.valueOf(number) + " ";

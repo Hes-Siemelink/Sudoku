@@ -6,10 +6,20 @@ import java.util.List;
 
 public class Puzzle {
 
-    private final List<Cell> cells = initCells();
-    private final List<Group> groups = initGroups();
+    private final List<Cell> cells;
+    private final List<Group> groups;
 
     public Puzzle() {
+        cells = initCells();
+        groups = initGroups();
+    }
+
+    public Puzzle(Puzzle original) {
+        cells = new ArrayList<>(81);
+        for (Cell cell : original.getCells()) {
+            cells.add(new Cell(cell));
+        }
+        groups = initGroups();
     }
 
     public List<Cell> getCells() {
@@ -35,7 +45,7 @@ public class Puzzle {
     private List<Cell> initCells() {
         List<Cell> cells = new ArrayList<>(81);
         for (int i = 0; i < 81; i++) {
-            cells.add(new Cell(String.format("r%sc%s", i / 9 + 1, i % 9 + 1)));
+            cells.add(new Cell(String.format("Row %s column %s", i / 9 + 1, i % 9 + 1)));
         }
         return cells;
     }

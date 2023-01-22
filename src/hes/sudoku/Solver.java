@@ -15,18 +15,13 @@ public class Solver {
     public void solve() {
 
         // Print
-        printer.printPuzzle();
-
-        long start = System.currentTimeMillis();
+        printer.printStart();
 
         // Solve
         sweep();
 
         if (puzzle.isSolved()) {
-            long duration = System.currentTimeMillis() - start;
-            System.out.format("Solved in %s ms.\n", duration);
-            printer.out.println("Solution:");
-            printer.printPuzzle();
+            printer.printEnd();
             return;
         }
 
@@ -39,22 +34,19 @@ public class Solver {
         printer.out.println("\nAfter:");
         printer.printAllCandidates();
 
-        eliminateBasedOnUniqueSetsInGroup();
-
-        printer.out.println("\nAgain:");
-        printer.printAllCandidates();
-
-        sweep();
-
-        printer.out.println("\nAnd again:");
-        printer.printAllCandidates();
-
         // Print
         printer.out.println("\nPuzzle:");
         printer.printPuzzle();
+
+        printer.out.println("Solving recursively");
+        Collection<Candidate> candidates = new RecursiveSolver(puzzle).solve();
+        printer.out.println("Solution:");
+        candidates.forEach(printer.out::println);
+        candidates.forEach(candidate -> puzzle.setNumber(candidate.number(), candidate.cell()));
+        printer.printEnd();
     }
 
-    private void sweep() {
+    public void sweep() {
         Set<Candidate> candidates = Collections.EMPTY_SET;
         do {
             candidates = new LinkedHashSet();
@@ -82,9 +74,7 @@ public class Solver {
 
     private void printCandidates(Set<Candidate> candidates) {
         printer.out.println("Moves:");
-        for (Candidate candidate: candidates) {
-            printer.out.format("%s can be filled with %s - %s\n", candidate.cell(), candidate.number(), candidate.reason());
-        }
+        candidates.forEach(printer.out::println);
     }
 
 
@@ -212,7 +202,7 @@ public class Solver {
     private void removeOtherDependencies(Group group, Set<Integer> set) {
         for (Cell cell : group.getCells()) {
             if (!cell.getCandidates().equals(set)) {
-                cell.getCandidates().removeAll(set);
+                cell.removeCandidates(set);
             }
         }
     }
@@ -230,7 +220,7 @@ public class Solver {
     //
     
     public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.GOOI_EN_EEMBODE_19_JAN_2023);
+        Puzzle puzzle = Puzzle.parse(Samples.MEDIUM);
 
         // Solve
         new Solver(puzzle).solve();
