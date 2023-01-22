@@ -10,24 +10,24 @@ public class RecursiveSolver {
         this.puzzle = puzzle;
     }
 
-    public Set<Candidate> solve() {
-        Set<Candidate> candidates = new LinkedHashSet<>();
+    public Set<Move> solve() {
+        Set<Move> candidates = new LinkedHashSet<>();
         solve(candidates);
         return candidates;
     }
 
-    public boolean solve(Set<Candidate> candidates) {
+    public boolean solve(Set<Move> moves) {
         if (puzzle.isSolved()) {
             return true;
         }
 
-        Collection<Candidate> possibleCandidates = getPossibleCandidates();
+        Collection<Move> candidates = getPossibleMoves();
 
-        for (Candidate candidate : possibleCandidates) {
+        for (Move candidate : candidates) {
             Puzzle clone = new Puzzle(puzzle);
-            puzzle.setNumber(candidate.number(), candidate.cell());
-            if (solve(puzzle, candidates)) {
-                candidates.add(candidate);
+            puzzle.apply(candidate);
+            if (solve(puzzle, moves)) {
+                moves.add(candidate);
                 return true;
             }
             System.out.format("%s does not solve the puzzle", candidate);
@@ -36,8 +36,8 @@ public class RecursiveSolver {
         return false;
     }
 
-    private boolean solve(Puzzle puzzle, Set<Candidate> candidates) {
-        Solver solver = new Solver(puzzle);
+    private boolean solve(Puzzle puzzle, Set<Move> candidates) {
+        LogicSolver solver = new LogicSolver(puzzle);
         solver.sweep();
         if (puzzle.isSolved()) {
             return true;
@@ -46,22 +46,22 @@ public class RecursiveSolver {
         return new RecursiveSolver(puzzle).solve(candidates);
     }
 
-    private Collection<Candidate> getPossibleCandidates() {
-        ArrayList<Candidate> posssibleCandidates = new ArrayList<>();
+    private Collection<Move> getPossibleMoves() {
+        ArrayList<Move> moves = new ArrayList<>();
         for (Cell cell : puzzle.getCells()) {
             for (Integer  number : cell.getCandidates()) {
-                posssibleCandidates.add(new Candidate(cell, number, "Recursive guess out of " + cell.getCandidates().size()));
+                moves.add(new Move(cell, number, "Recursive guess out of " + cell.getCandidates().size()));
             }
         }
 
-        posssibleCandidates.sort(new CellCandidateComparator());
+        moves.sort(new CellCandidateComparator());
 
-        return posssibleCandidates;
+        return moves;
     }
 
-    private static class CellCandidateComparator implements Comparator<Candidate> {
+    private static class CellCandidateComparator implements Comparator<Move> {
         @Override
-        public int compare(Candidate o1, Candidate o2) {
+        public int compare(Move o1, Move o2) {
             return o1.cell().getCandidates().size() - o2.cell().getCandidates().size();
         }
     }

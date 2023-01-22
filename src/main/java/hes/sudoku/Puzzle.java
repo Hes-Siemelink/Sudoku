@@ -82,17 +82,17 @@ public class Puzzle {
     public Group initBox(String name, int startX, int startY) {
         Group block = new Group(name);
 
-        block.addCell(cell(startX + 0, startY + 0));
-        block.addCell(cell(startX + 1, startY + 0));
-        block.addCell(cell(startX + 2, startY + 0));
+        block.addCell(getCell(startX + 0, startY + 0));
+        block.addCell(getCell(startX + 1, startY + 0));
+        block.addCell(getCell(startX + 2, startY + 0));
 
-        block.addCell(cell(startX + 0, startY + 1));
-        block.addCell(cell(startX + 1, startY + 1));
-        block.addCell(cell(startX + 2, startY + 1));
+        block.addCell(getCell(startX + 0, startY + 1));
+        block.addCell(getCell(startX + 1, startY + 1));
+        block.addCell(getCell(startX + 2, startY + 1));
 
-        block.addCell(cell(startX + 0, startY + 2));
-        block.addCell(cell(startX + 1, startY + 2));
-        block.addCell(cell(startX + 2, startY + 2));
+        block.addCell(getCell(startX + 0, startY + 2));
+        block.addCell(getCell(startX + 1, startY + 2));
+        block.addCell(getCell(startX + 2, startY + 2));
 
         return block;
     }
@@ -100,7 +100,7 @@ public class Puzzle {
     private Group initRow(String name, int y) {
         Group row = new Group(name);
         for (int i = 0; i < 9; i++) {
-            row.addCell(cell(i, y));
+            row.addCell(getCell(i, y));
         }
         return row;
     }
@@ -108,7 +108,7 @@ public class Puzzle {
     private Group initColumn(String name, int x) {
         Group column = new Group(name);
         for (int i = 0; i < 9; i++) {
-            column.addCell(cell(x, i));
+            column.addCell(getCell(x, i));
         }
         return column;
     }
@@ -117,15 +117,15 @@ public class Puzzle {
     // Set numbers
     //
 
-    public Cell cell(int x, int y) {
+    public Cell getCell(int x, int y) {
         return cells.get(y * 9 + x);
     }
 
-    public void setNumber(Integer number, int x, int y) {
-        setNumber(number, cell(x, y));
+    public void apply(Move move) {
+        apply(move.number(), move.cell());
     }
 
-    public void setNumber(Integer number, Cell cell) {
+    public void apply(Integer number, Cell cell) {
         cell.setNumber(number);
 
         // Update cells
@@ -158,7 +158,7 @@ public class Puzzle {
             }
 
             if (Character.isDigit(c)) {
-                puzzle.setNumber(Integer.valueOf(String.valueOf(c)), i % 9, i / 9);
+                puzzle.apply(Integer.valueOf(String.valueOf(c)), puzzle.getCell(i % 9, i / 9));
             }
 
             i++;

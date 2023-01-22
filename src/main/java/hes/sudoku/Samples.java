@@ -16,7 +16,7 @@ public class Samples {
             . . .   . . .   . . .
             """;
 
-    public final static String GOOI_EN_EEMBODE = """
+    public final static String GOOI_EN_EEMBODE_DEC_2023 = """
             8 . .   . 1 .   . . 7
             . . .   . . .   . 9 5
             . . .   7 . .   . 4 .
@@ -98,6 +98,34 @@ public class Samples {
             . . .   . . 2   6 . 5
             . . 1   9 6 4   2 . .
             . . .   8 . .   . . 1
+            """;
+
+    public final static String SAM = """
+            2 . .   5 . 7   4 . 6
+            . . .   . 3 1   . . .
+            . . .   . . .   2 3 .
+
+            . . .   . 2 .   . . .
+            8 6 .   3 1 .   . . .
+            . 4 5   . . .   . . .
+
+            . . 9   . . .   7 . .
+            . . 6   9 5 .   . . 2
+            . . 1   . . 6   . . 8
+            """;
+
+    public final static String REDDIT = """
+            . . .   9 . .   1 . 2
+            7 . .   3 . .   6 . .
+            . . 2   . . .   . 3 .
+
+            9 . .   . . 8   7 . .
+            3 . .   . 1 .   . . 9
+            . . 6   5 . .   . . 1
+
+            . 1 .   . . .   4 . .
+            . . 4   . . 9   . . 6
+            8 . 3   . . 6   . . .
             """;
 
 

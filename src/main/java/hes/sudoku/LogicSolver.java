@@ -2,52 +2,18 @@ package hes.sudoku;
 
 import java.util.*;
 
-public class Solver {
+public class LogicSolver {
 
     private final Puzzle puzzle;
     private Printer printer;
 
-    public Solver(Puzzle puzzle) {
+    public LogicSolver(Puzzle puzzle) {
         this.puzzle = puzzle;
         this.printer = new Printer(puzzle);
     }
 
-    public void solve() {
-
-        // Print
-        printer.printStart();
-
-        // Solve
-        sweep();
-
-        if (puzzle.isSolved()) {
-            printer.printEnd();
-            return;
-        }
-
-        printer.out.println("\nEliminating candidates where there are subsets contains all possibilities.");
-        printer.out.println("\nBefore:");
-        printer.printAllCandidates();
-
-        eliminateBasedOnUniqueSetsInGroup();
-
-        printer.out.println("\nAfter:");
-        printer.printAllCandidates();
-
-        // Print
-        printer.out.println("\nPuzzle:");
-        printer.printPuzzle();
-
-        printer.out.println("Solving recursively");
-        Collection<Candidate> candidates = new RecursiveSolver(puzzle).solve();
-        printer.out.println("Solution:");
-        candidates.forEach(printer.out::println);
-        candidates.forEach(candidate -> puzzle.setNumber(candidate.number(), candidate.cell()));
-        printer.printEnd();
-    }
-
     public void sweep() {
-        Set<Candidate> candidates = Collections.EMPTY_SET;
+        Set<Move> candidates = Collections.EMPTY_SET;
         do {
             candidates = new LinkedHashSet();
             eliminateCrossGroupDependencies(); // TODO move out of sweep() to make it less heavy
@@ -55,26 +21,27 @@ public class Solver {
             candidates.addAll(findByElimination());
             candidates.addAll(findGhostCandidates());
 
-            fillInCandidates(candidates);
+            applyMoves(candidates);
         } while (!candidates.isEmpty());
 
         printer.out.println("No more candidates found.\n");
     }
 
-    private void fillInCandidates(Set<Candidate> candidates) {
-        if (candidates.isEmpty()) {
+    private void applyMoves(Set<Move> moves) {
+        if (moves.isEmpty()) {
             return;
         }
 
-        printCandidates(candidates);
-        for (Candidate candidate : candidates) {
-            puzzle.setNumber(candidate.number(), candidate.cell());
+        printMoves(moves);
+
+        for (Move move : moves) {
+            puzzle.apply(move);
         }
     }
 
-    private void printCandidates(Set<Candidate> candidates) {
+    private void printMoves(Set<Move> moves) {
         printer.out.println("Moves:");
-        candidates.forEach(printer.out::println);
+        moves.forEach(printer.out::println);
     }
 
 
@@ -82,11 +49,11 @@ public class Solver {
     // Find candidates
     //
 
-    private Set<Candidate> findByElimination() {
-        Set<Candidate> candidates = new LinkedHashSet();
+    private Set<Move> findByElimination() {
+        Set<Move> candidates = new LinkedHashSet();
         for (Cell cell : puzzle.getCells()) {
             if (cell.getCandidates().size() == 1) {
-                candidates.add(new Candidate(cell, getCandidate(cell), "Only possible value for " + cell));
+                candidates.add(new Move(cell, getCandidate(cell), "Only possible value for " + cell));
             }
         }
         return candidates;
@@ -97,8 +64,8 @@ public class Solver {
     }
 
 
-    private Set<Candidate> findGhostCandidates() {
-        Set<Candidate> candidates = new LinkedHashSet();
+    private Set<Move> findGhostCandidates() {
+        Set<Move> candidates = new LinkedHashSet();
         for (Group group : puzzle.getGroups()) {
             candidates.addAll(findGhostCandidates(group));
         }
@@ -106,9 +73,9 @@ public class Solver {
         return candidates;
     }
 
-    public Set<Candidate> findGhostCandidates(Group group) {
+    public Set<Move> findGhostCandidates(Group group) {
 
-        Set<Candidate> candidates = new LinkedHashSet();
+        Set<Move> candidates = new LinkedHashSet();
         for (int number = 1; number < 10; number++) {
             int nrOfCandidates = 0;
             for (Cell cell : group.getCells()) {
@@ -118,7 +85,7 @@ public class Solver {
             }
             if (nrOfCandidates == 1) {
                 Cell cell = getFirstGhost(number, group.getCells());
-                candidates.add(new Candidate(cell, number, "Unique candidate in " + group));
+                candidates.add(new Move(cell, number, "Unique candidate in " + group));
             }
         }
 
@@ -180,19 +147,19 @@ public class Solver {
     //
     //
 
-    private void eliminateBasedOnUniqueSetsInGroup() {
+    public void eliminateBasedOnUniqueSetsInGroup() {
         for (Group group : puzzle.getGroups()) {
             eliminateBasedOnUniqueSets(group);
         }
     }
 
     private void eliminateBasedOnUniqueSets(Group group) {
-        Map<Set<Integer>, Integer> sets = new LinkedHashMap<>();
+        Map<Set<Integer>, Integer> candidateSetCount = new LinkedHashMap<>();
         for (Cell cell : group.getCells()) {
-            add(cell.getCandidates(), sets);
+            add(candidateSetCount, cell.getCandidates());
         }
 
-        for (Map.Entry<Set<Integer>, Integer> entry : sets.entrySet()) {
+        for (Map.Entry<Set<Integer>, Integer> entry : candidateSetCount.entrySet()) {
             if (entry.getKey().size() == entry.getValue()) {
                 removeOtherDependencies(group, entry.getKey());
             }
@@ -207,22 +174,11 @@ public class Solver {
         }
     }
 
-    private <T> void add(T something, Map<T, Integer> count) {
+    private static <T> void add(Map<T, Integer> count, T something) {
         if (!count.containsKey(something)) {
             count.put(something, 1);
         } else {
             count.put(something, count.get(something) + 1);
         }
-    }
-
-    //
-    // Main
-    //
-    
-    public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.MEDIUM);
-
-        // Solve
-        new Solver(puzzle).solve();
     }
 }
