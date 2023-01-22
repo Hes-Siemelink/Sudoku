@@ -5,15 +5,18 @@ import java.util.*;
 public class RecursiveSolver {
 
     private final Puzzle puzzle;
+    private final Printer printer;
 
     public RecursiveSolver(Puzzle puzzle) {
         this.puzzle = puzzle;
+        this.printer = new Printer(puzzle);
     }
 
     public Set<Move> solve() {
-        Set<Move> candidates = new LinkedHashSet<>();
-        solve(candidates);
-        return candidates;
+        Set<Move> moves = new LinkedHashSet<>();
+        solve(moves);
+
+        return moves;
     }
 
     public boolean solve(Set<Move> moves) {
@@ -24,13 +27,16 @@ public class RecursiveSolver {
         Collection<Move> candidates = getPossibleMoves();
 
         for (Move candidate : candidates) {
-            Puzzle clone = new Puzzle(puzzle);
-            puzzle.apply(candidate);
-            if (solve(puzzle, moves)) {
+            printer.out.println("Trying " + candidate);
+
+            Puzzle clonedPuzzle = new Puzzle(puzzle);
+            clonedPuzzle.apply(candidate);
+
+            if (solve(clonedPuzzle, moves)) {
                 moves.add(candidate);
                 return true;
             }
-            System.out.format("%s does not solve the puzzle", candidate);
+            printer.out.format("%s does not solve the puzzle", candidate);
         }
 
         return false;
@@ -40,8 +46,13 @@ public class RecursiveSolver {
         LogicSolver solver = new LogicSolver(puzzle);
         solver.sweep();
         if (puzzle.isSolved()) {
+            printer.out.println("Puzzle solved recursively");
+            new Printer(puzzle).printPuzzle();
             return true;
         }
+
+        new Printer(puzzle).printPuzzle();
+        printer.out.println("Puzzle not solved. Trying recursively.");
 
         return new RecursiveSolver(puzzle).solve(candidates);
     }

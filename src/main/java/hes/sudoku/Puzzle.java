@@ -45,7 +45,7 @@ public class Puzzle {
     private List<Cell> initCells() {
         List<Cell> cells = new ArrayList<>(81);
         for (int i = 0; i < 81; i++) {
-            cells.add(new Cell(String.format("Row %s column %s", i / 9 + 1, i % 9 + 1)));
+            cells.add(new Cell(i / 9, i % 9));
         }
         return cells;
     }
@@ -122,10 +122,10 @@ public class Puzzle {
     }
 
     public void apply(Move move) {
-        apply(move.number(), move.cell());
+        apply(getCell(move.cell().getColumn(), move.cell().getRow()), move.number());
     }
 
-    public void apply(Integer number, Cell cell) {
+    public void apply(Cell cell, Integer number) {
         cell.setNumber(number);
 
         // Update cells
@@ -158,7 +158,7 @@ public class Puzzle {
             }
 
             if (Character.isDigit(c)) {
-                puzzle.apply(Integer.valueOf(String.valueOf(c)), puzzle.getCell(i % 9, i / 9));
+                puzzle.apply(puzzle.getCell(i % 9, i / 9), Integer.valueOf(String.valueOf(c)));
             }
 
             i++;

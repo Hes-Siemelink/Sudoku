@@ -40,11 +40,14 @@ public class Main {
         moves.forEach(printer.out::println);
         moves.forEach(puzzle::apply);
 
+
+        solver.sweep();
+
         printer.printEnd();
     }
 
     public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.SAM);
+        Puzzle puzzle = Puzzle.parse(Samples.EMPTY);
         solve(puzzle);
     }
 }

@@ -53,7 +53,7 @@ public class LogicSolver {
         Set<Move> candidates = new LinkedHashSet();
         for (Cell cell : puzzle.getCells()) {
             if (cell.getCandidates().size() == 1) {
-                candidates.add(new Move(cell, getCandidate(cell), "Only possible value for " + cell));
+                candidates.add(new Move(cell, getCandidate(cell), "Only possible value for this cell"));
             }
         }
         return candidates;

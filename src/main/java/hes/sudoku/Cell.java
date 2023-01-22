@@ -10,11 +10,13 @@ public class Cell {
     private boolean known = false;
     private Set<Integer> candidates = new LinkedHashSet<>(9);
 
-    private final String name;
+    private final int row;
+    private final int column;
     private final Set<Group> groups = new LinkedHashSet<>();
 
-    public Cell(String name) {
-        this.name = name;
+    public Cell(int row, int column) {
+        this.row = row;
+        this.column = column;
         for (int number = 1; number <= 9; number++) {
             candidates.add(number);
         }
@@ -24,7 +26,16 @@ public class Cell {
         this.number = original.number;
         this.known = original.known;
         this.candidates.addAll(original.candidates);
-        this.name = original.name;
+        this.row = original.row;
+        this.column = original.column;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
     }
 
     public boolean isKnown() {
@@ -43,6 +54,10 @@ public class Cell {
         return Collections.unmodifiableSet(groups);
     }
 
+    public String getName() {
+        return String.format("Row %s column %s", row + 1, column + 1);
+    }
+
     public void add(Group group) {
         groups.add(group);
     }
@@ -55,6 +70,9 @@ public class Cell {
 
     public void eliminate(Integer number) {
         candidates.remove(number);
+        if (!known && candidates.size() == 0) {
+            throw new IllegalStateException(String.format("No more candidates for %s after eliminating %s", toString(), number));
+        }
     }
 
     public void removeCandidates(Set<Integer> invalidCandidates) {
@@ -82,7 +100,7 @@ public class Cell {
 
     @Override
     public String toString() {
-        return name;
+        return String.format("Row %s column %s", row + 1, column + 1);
     }
 
     public boolean hasCandidate(Integer number) {
