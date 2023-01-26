@@ -12,27 +12,15 @@ public class Main {
         // Print
         printer.printStart();
 
-        // Solve
-        solver.sweep();
+        // Solve with logic
+        solver.solve();
 
         if (puzzle.isSolved()) {
             printer.printEnd();
             return;
         }
 
-        printer.out.println("\nEliminating candidates where there are subsets contains all possibilities.");
-        printer.out.println("\nBefore:");
-        printer.printAllCandidates();
-
-        solver.eliminateBasedOnUniqueSetsInGroup();
-
-        printer.out.println("\nAfter:");
-        printer.printAllCandidates();
-
-        // Print
-        printer.out.println("\nPuzzle:");
-        printer.printPuzzle();
-
+        // Solve recursively
         printer.out.println("Solving recursively");
         Collection<Move> moves = new RecursiveSolver(puzzle).solve();
 
@@ -40,14 +28,13 @@ public class Main {
         moves.forEach(printer.out::println);
         moves.forEach(puzzle::apply);
 
-
         solver.sweep();
 
         printer.printEnd();
     }
 
     public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.EMPTY);
+        Puzzle puzzle = Puzzle.parse(Samples.GOOI_EN_EEMBODE_26_JAN_2023);
         solve(puzzle);
     }
 }

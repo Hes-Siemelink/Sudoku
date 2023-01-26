@@ -21,6 +21,6 @@ public record Move(Cell cell, Integer number, String reason) {
 
     @Override
     public String toString() {
-        return String.format("Write %s in row %s, column %s - %s", number, cell.getRow() + 1, cell.getColumn() + 1, reason);
+        return String.format("%s in row %s, column %s - %s", number, cell.getRow() + 1, cell.getColumn() + 1, reason);
     }
 }

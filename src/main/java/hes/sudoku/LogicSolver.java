@@ -12,36 +12,78 @@ public class LogicSolver {
         this.printer = new Printer(puzzle);
     }
 
-    public void sweep() {
-        Set<Move> candidates = Collections.EMPTY_SET;
+    public void solve() {
+        boolean foundSomething;
         do {
-            candidates = new LinkedHashSet();
-            eliminateCrossGroupDependencies(); // TODO move out of sweep() to make it less heavy
+            foundSomething = false;
+            foundSomething |= sweep();
+            foundSomething |= eliminate();
+        } while (foundSomething == true);
+    }
 
-            candidates.addAll(findByElimination());
-            candidates.addAll(findGhostCandidates());
+    public boolean sweep() {
+        Set<Move> moves = Collections.EMPTY_SET;
+        boolean foundSomething = false;
+        do {
+            moves = new LinkedHashSet();
 
-            applyMoves(candidates);
-        } while (!candidates.isEmpty());
+            moves.addAll(findUniqueCandidatesInGroup());
+            moves.addAll(findUniqueCandidates());
 
-        printer.out.println("No more candidates found.\n");
+            if (!moves.isEmpty()) {
+                applyMoves(moves);
+                foundSomething = true;
+            }
+
+        } while (!moves.isEmpty());
+
+        printer.out.println("No more moves found.");
+
+        return foundSomething;
+    }
+
+    public boolean eliminate() {
+        Set<Move> eliminations = Collections.EMPTY_SET;
+        boolean foundSomething = false;
+        do {
+            eliminations = new LinkedHashSet();
+
+            eliminations.addAll(eliminateCrossGroupDependencies());
+            eliminations.addAll(eliminateBasedOnUniqueSetsInGroup());
+
+            if (!eliminations.isEmpty()) {
+                applyEliminations(eliminations);
+                foundSomething = true;
+            }
+
+        } while (!eliminations.isEmpty());
+
+        printer.out.println("No more eliminations found.");
+
+        return foundSomething;
     }
 
     private void applyMoves(Set<Move> moves) {
-        if (moves.isEmpty()) {
-            return;
+        if (!moves.isEmpty()) {
+            printer.out.println("Moves:");
         }
 
-        printMoves(moves);
-
         for (Move move : moves) {
+            printer.out.println(move);
             puzzle.apply(move);
         }
     }
 
-    private void printMoves(Set<Move> moves) {
-        printer.out.println("Moves:");
-        moves.forEach(printer.out::println);
+    private void applyEliminations(Set<Move> eliminations) {
+        if (!eliminations.isEmpty()) {
+            printer.out.println("\nEliminating candidates:");
+        }
+
+        for (Move elimination : eliminations) {
+            printer.out.println(elimination);
+            Cell cell = puzzle.getCell(elimination.cell().getColumn(), elimination.cell().getRow());
+            cell.eliminate(elimination.number());
+        }
     }
 
 
@@ -49,14 +91,14 @@ public class LogicSolver {
     // Find candidates
     //
 
-    private Set<Move> findByElimination() {
-        Set<Move> candidates = new LinkedHashSet();
+    private Set<Move> findUniqueCandidates() {
+        Set<Move> moves = new LinkedHashSet();
         for (Cell cell : puzzle.getCells()) {
             if (cell.getCandidates().size() == 1) {
-                candidates.add(new Move(cell, getCandidate(cell), "Only possible value for this cell"));
+                moves.add(new Move(cell, getCandidate(cell), "No other candidate for this cell"));
             }
         }
-        return candidates;
+        return moves;
     }
 
     public Integer getCandidate(Cell cell) {
@@ -64,7 +106,7 @@ public class LogicSolver {
     }
 
 
-    private Set<Move> findGhostCandidates() {
+    private Set<Move> findUniqueCandidatesInGroup() {
         Set<Move> candidates = new LinkedHashSet();
         for (Group group : puzzle.getGroups()) {
             candidates.addAll(findGhostCandidates(group));
@@ -85,7 +127,7 @@ public class LogicSolver {
             }
             if (nrOfCandidates == 1) {
                 Cell cell = getFirstGhost(number, group.getCells());
-                candidates.add(new Move(cell, number, "Unique candidate in " + group));
+                candidates.add(new Move(cell, number, String.format("Only possibility in %s", group)));
             }
         }
 
@@ -107,17 +149,21 @@ public class LogicSolver {
     // Eliminate
     //
 
-    private void eliminateCrossGroupDependencies() {
+    private Set<Move> eliminateCrossGroupDependencies() {
+        Set<Move> eliminations = new LinkedHashSet();
+
         for (Group group : puzzle.getGroups()) {
             for (int number = 1; number <= 9; number++) {
-                eliminateCrossGroupDependencies(group, number, puzzle.getBoxes());
-                eliminateCrossGroupDependencies(group, number, puzzle.getRows());
-                eliminateCrossGroupDependencies(group, number, puzzle.getColumns());
+                eliminateCrossGroupDependencies(group, number, puzzle.getBoxes(), eliminations);
+                eliminateCrossGroupDependencies(group, number, puzzle.getRows(), eliminations);
+                eliminateCrossGroupDependencies(group, number, puzzle.getColumns(), eliminations);
             }
         }
+
+        return eliminations;
     }
 
-    private void eliminateCrossGroupDependencies(Group group, Integer number, List<Group> ignore) {
+    private void eliminateCrossGroupDependencies(Group group, Integer number, List<Group> ignore, Set<Move> eliminations) {
 
         Set<Group> overlapping = getOverlappingGroupsWithSameNumber(group, number);
         overlapping.removeAll(ignore);
@@ -127,7 +173,12 @@ public class LogicSolver {
             Set<Cell> cells = new LinkedHashSet<>(other.getCells());
             cells.removeAll(group.getCells());
 
-            cells.forEach(cell -> cell.eliminate(number));
+            for (Cell cell: cells) {
+                if (!cell.hasCandidate(number)) {
+                    continue;
+                }
+                eliminations.add(new Move(cell, number, String.format("Eliminating %s because it needs to be in %s, %s", number, group, other)));
+            }
         }
     }
 
@@ -147,13 +198,17 @@ public class LogicSolver {
     //
     //
 
-    public void eliminateBasedOnUniqueSetsInGroup() {
+    public Set<Move> eliminateBasedOnUniqueSetsInGroup() {
+        Set<Move> eliminations = new LinkedHashSet();
+
         for (Group group : puzzle.getGroups()) {
-            eliminateBasedOnUniqueSets(group);
+            eliminateBasedOnUniqueSets(group, eliminations);
         }
+
+        return eliminations;
     }
 
-    private void eliminateBasedOnUniqueSets(Group group) {
+    private static void eliminateBasedOnUniqueSets(Group group, Set<Move> eliminations) {
         Map<Set<Integer>, Integer> candidateSetCount = new LinkedHashMap<>();
         for (Cell cell : group.getCells()) {
             add(candidateSetCount, cell.getCandidates());
@@ -161,15 +216,19 @@ public class LogicSolver {
 
         for (Map.Entry<Set<Integer>, Integer> entry : candidateSetCount.entrySet()) {
             if (entry.getKey().size() == entry.getValue()) {
-                removeOtherDependencies(group, entry.getKey());
+                removeOtherDependencies(group, entry.getKey(), eliminations);
             }
         }
     }
 
-    private void removeOtherDependencies(Group group, Set<Integer> set) {
+    private static void removeOtherDependencies(Group group, Set<Integer> set, Set<Move> eliminations) {
         for (Cell cell : group.getCells()) {
             if (!cell.getCandidates().equals(set)) {
-                cell.removeCandidates(set);
+                for (Integer number : set) {
+                    if (cell.hasCandidate(number)) {
+                        eliminations.add(new Move(cell, number, String.format("Eliminate based on unique set in %s", group)));
+                    }
+                }
             }
         }
     }
