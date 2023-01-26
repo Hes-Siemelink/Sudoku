@@ -15,9 +15,7 @@ public class LogicSolver {
     public void solve() {
         boolean foundSomething;
         do {
-            foundSomething = false;
-            foundSomething |= sweep();
-            foundSomething |= eliminate();
+            foundSomething = sweep() || eliminate();
         } while (foundSomething == true);
     }
 
