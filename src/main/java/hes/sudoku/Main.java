@@ -13,6 +13,7 @@ public class Main {
         printer.printStart();
 
         // Solve with logic
+        printer.println("\nMoves:");
         solver.solve();
 
         if (puzzle.isSolved()) {
@@ -21,11 +22,11 @@ public class Main {
         }
 
         // Solve recursively
-        printer.out.println("Solving recursively");
+        printer.println("\nSolving recursively");
         Collection<Move> moves = new RecursiveSolver(puzzle).solve();
 
-        printer.out.println("Solution:");
-        moves.forEach(printer.out::println);
+        printer.println("\nMoves:");
+        moves.forEach(printer::println);
         moves.forEach(puzzle::apply);
 
         solver.fillNumbers();
@@ -34,7 +35,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Puzzle puzzle = Puzzle.parse(Samples.GOOI_EN_EEMBODE_26_JAN_2023);
+        Puzzle puzzle = Puzzle.parse(Samples.HARD);
         solve(puzzle);
     }
 }

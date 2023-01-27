@@ -27,7 +27,7 @@ public class RecursiveSolver {
         Collection<Move> candidates = getPossibleMoves();
 
         for (Move candidate : candidates) {
-            printer.out.println("Trying " + candidate);
+            printer.println("Trying " + candidate);
 
             Puzzle clonedPuzzle = new Puzzle(puzzle);
             clonedPuzzle.apply(candidate);
@@ -36,23 +36,22 @@ public class RecursiveSolver {
                 moves.add(candidate);
                 return true;
             }
-            printer.out.format("%s does not solve the puzzle", candidate);
+            printer.println("%s does not solve the puzzle", candidate);
         }
 
         return false;
     }
 
     private boolean solve(Puzzle puzzle, Set<Move> candidates) {
-        LogicSolver solver = new LogicSolver(puzzle);
+        LogicSolver solver = new LogicSolver(puzzle, Printer.silentPrinter());
         solver.fillNumbers();
         if (puzzle.isSolved()) {
-            printer.out.println("Puzzle solved recursively");
-            new Printer(puzzle).printPuzzle();
+            printer.println("Puzzle solved recursively.");
             return true;
         }
 
         new Printer(puzzle).printPuzzle();
-        printer.out.println("Puzzle not solved. Trying recursively.");
+        printer.println("Puzzle not solved. Trying recursively.");
 
         return new RecursiveSolver(puzzle).solve(candidates);
     }

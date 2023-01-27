@@ -8,7 +8,6 @@ public class Printer {
     public final PrintStream out;
 
     private final Puzzle puzzle;
-    private final List<Cell> cells;
     private long start = System.currentTimeMillis();
 
     public Printer(Puzzle puzzle) {
@@ -18,7 +17,15 @@ public class Printer {
     public Printer(Puzzle puzzle, PrintStream out) {
         this.puzzle = puzzle;
         this.out = out;
-        this.cells = puzzle.getCells();
+    }
+
+    public void println(Object message, Object... args) {
+        if (args == null) {
+            out.println(message);
+        } else {
+            out.format(String.valueOf(message), args);
+            out.println();
+        }
     }
 
     public void printStart() {
@@ -28,21 +35,21 @@ public class Printer {
 
     public void printEnd() {
         long duration = System.currentTimeMillis() - start;
-        System.out.format("Solved in %s ms.\n", duration);
-        out.println("Solution:");
+        out.println("\nSolution:");
         printPuzzle();
+        System.out.format("Solved in %s ms.\n", duration);
     }
 
     public void printPuzzle() {
 
         out.println("+-------+-------+-------+");
-        for (int i = 0; i < cells.size(); i++) {
+        for (int i = 0; i < puzzle.getCells().size(); i++) {
 
             if (i % 9 == 0) {
                 out.print("| ");
             }
 
-            out.print(cells.get(i).text());
+            out.print(puzzle.getCells().get(i).text());
 
             // Block divider
             int next = i + 1;
@@ -61,16 +68,17 @@ public class Printer {
             }
         }
     }
+
     public void printAllCandidates() {
 
         out.println("+----------------------------+-----------------------------+-----------------------------+");
-        for (int i = 0; i < cells.size(); i++) {
+        for (int i = 0; i < puzzle.getCells().size(); i++) {
 
             if (i % 9 == 0) {
                 out.print("|");
             }
 
-            out.print(cells.get(i).allCandidatesAsString());
+            out.print(puzzle.getCells().get(i).allCandidatesAsString());
 
             // Block divider
             int next = i + 1;
@@ -90,11 +98,22 @@ public class Printer {
         }
     }
 
-    public void printCandidatesPerGroup() {
+    public static Printer silentPrinter() {
+        return new Printer(null) {
+            @Override
+            public void println(Object message, Object... args) { }
 
-        out.println("Number of candidates per group:");
-        for (Group group : puzzle.getGroups()) {
-            out.println(String.format("%s: %s", group, group.candidates()));
-        }
+            @Override
+            public void printStart() { }
+
+            @Override
+            public void printEnd() { }
+
+            @Override
+            public void printPuzzle() { }
+
+            @Override
+            public void printAllCandidates() { }
+        };
     }
 }

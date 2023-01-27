@@ -8,8 +8,12 @@ public class LogicSolver {
     private Printer printer;
 
     public LogicSolver(Puzzle puzzle) {
+        this(puzzle, new Printer(puzzle));
+    }
+
+    public LogicSolver(Puzzle puzzle, Printer printer) {
         this.puzzle = puzzle;
-        this.printer = new Printer(puzzle);
+        this.printer = printer;
     }
 
     public void solve() {
@@ -17,65 +21,53 @@ public class LogicSolver {
     }
 
     public boolean fillNumbers() {
-        Set<Move> moves = Collections.EMPTY_SET;
-        boolean foundSomething = false;
+        Set<Move> moves;
         do {
             moves = new LinkedHashSet();
 
             moves.addAll(findUniqueCandidatesInGroup());
             moves.addAll(findUniqueCandidates());
 
-            if (!moves.isEmpty()) {
-                applyMoves(moves);
-                foundSomething = true;
-            }
+            applyMoves(moves);
 
         } while (!moves.isEmpty());
 
-        printer.out.println("No more moves found.");
+        printer.println("No more moves found.");
 
-        return foundSomething;
+        return !moves.isEmpty();
     }
 
     public boolean eliminateCandidates() {
-        Set<Move> eliminations = Collections.EMPTY_SET;
-        boolean foundSomething = false;
+        Set<Move> eliminations;
         do {
             eliminations = new LinkedHashSet();
 
             eliminations.addAll(eliminateCrossGroupDependencies());
             eliminations.addAll(eliminateBasedOnUniqueSetsInGroup());
 
-            if (!eliminations.isEmpty()) {
-                applyEliminations(eliminations);
-                foundSomething = true;
-            }
+            applyEliminations(eliminations);
 
         } while (!eliminations.isEmpty());
 
-        printer.out.println("No more eliminations found.");
+        printer.println("No more eliminations found.");
 
-        return foundSomething;
+        return !eliminations.isEmpty();
     }
 
     private void applyMoves(Set<Move> moves) {
-        if (!moves.isEmpty()) {
-            printer.out.println("Moves:");
-        }
-
         for (Move move : moves) {
-            printer.out.println(move);
+            printer.println(move);
             puzzle.apply(move);
         }
     }
 
     private void applyEliminations(Set<Move> eliminations) {
         if (!eliminations.isEmpty()) {
-            printer.out.println("\nEliminating candidates:");
+            printer.println("\nEliminating candidates:");
         }
 
         for (Move elimination : eliminations) {
-            printer.out.println(elimination);
+            printer.println(elimination);
             Cell cell = puzzle.getCell(elimination.cell().getColumn(), elimination.cell().getRow());
             cell.eliminate(elimination.number());
         }
