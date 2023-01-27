@@ -44,7 +44,7 @@ public class RecursiveSolver {
 
     private boolean solve(Puzzle puzzle, Set<Move> candidates) {
         LogicSolver solver = new LogicSolver(puzzle);
-        solver.sweep();
+        solver.fillNumbers();
         if (puzzle.isSolved()) {
             printer.out.println("Puzzle solved recursively");
             new Printer(puzzle).printPuzzle();

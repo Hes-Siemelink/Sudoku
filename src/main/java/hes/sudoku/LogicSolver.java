@@ -13,13 +13,10 @@ public class LogicSolver {
     }
 
     public void solve() {
-        boolean foundSomething;
-        do {
-            foundSomething = sweep() || eliminate();
-        } while (foundSomething == true);
+        while (fillNumbers() || eliminateCandidates());
     }
 
-    public boolean sweep() {
+    public boolean fillNumbers() {
         Set<Move> moves = Collections.EMPTY_SET;
         boolean foundSomething = false;
         do {
@@ -40,7 +37,7 @@ public class LogicSolver {
         return foundSomething;
     }
 
-    public boolean eliminate() {
+    public boolean eliminateCandidates() {
         Set<Move> eliminations = Collections.EMPTY_SET;
         boolean foundSomething = false;
         do {

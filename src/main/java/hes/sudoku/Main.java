@@ -28,7 +28,7 @@ public class Main {
         moves.forEach(printer.out::println);
         moves.forEach(puzzle::apply);
 
-        solver.sweep();
+        solver.fillNumbers();
 
         printer.printEnd();
     }
