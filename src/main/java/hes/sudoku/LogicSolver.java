@@ -182,7 +182,10 @@ public class LogicSolver {
     }
 
     //
-    //
+    // Eliminate candidates in a group when there is a subset of n candidates occuring n times.
+    // The elements of that particular set can't be candidates anywhere else in that group then.
+    // For example, you have a row that have two places with {2,4} as candidates. Then another cell
+    // with {2, 4, 6} should not have {2, 4}.
     //
 
     public Set<Move> eliminateBasedOnUniqueSetsInGroup() {
@@ -195,7 +198,7 @@ public class LogicSolver {
         return eliminations;
     }
 
-    private static void eliminateBasedOnUniqueSets(Group group, Set<Move> eliminations) {
+    static void eliminateBasedOnUniqueSets(Group group, Set<Move> eliminations) {
         Map<Set<Integer>, Integer> candidateSetCount = new LinkedHashMap<>();
         for (Cell cell : group.getCells()) {
             add(candidateSetCount, cell.getCandidates());
@@ -213,7 +216,7 @@ public class LogicSolver {
             if (!cell.getCandidates().equals(set)) {
                 for (Integer number : set) {
                     if (cell.hasCandidate(number)) {
-                        eliminations.add(new Move(cell, number, String.format("Eliminate based on unique set in %s", group)));
+                        eliminations.add(new Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)));
                     }
                 }
             }

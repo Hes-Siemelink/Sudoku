@@ -50,6 +50,11 @@ public class Cell {
         return Collections.unmodifiableSet(candidates);
     }
 
+    // For unit tests
+    void setCandidates(Set<Integer> candidates) {
+        this.candidates = candidates;
+    }
+
     public Set<Group> getGroups() {
         return Collections.unmodifiableSet(groups);
     }
