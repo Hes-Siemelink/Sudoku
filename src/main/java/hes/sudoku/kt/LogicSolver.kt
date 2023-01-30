@@ -1,6 +1,7 @@
 package hes.sudoku.kt
 
-class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private val printer: Printer = Printer(puzzle)) {
+class LogicSolver constructor(private val puzzle: Puzzle, private val printer: Printer = Printer(puzzle)) {
+
     fun solve() {
         while (fillNumbers() || eliminateCandidates());
     }
@@ -14,6 +15,7 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
             applyMoves(moves)
         } while (!moves.isEmpty())
         printer.println("No more moves found.")
+
         return !moves.isEmpty()
     }
 
@@ -26,6 +28,7 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
             applyEliminations(eliminations)
         } while (!eliminations.isEmpty())
         printer.println("No more eliminations found.")
+
         return !eliminations.isEmpty()
     }
 
@@ -50,10 +53,11 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
     //
     // Find candidates
     //
+
     private fun findUniqueCandidates(): Set<Move> {
         val moves: MutableSet<Move> = LinkedHashSet()
         for (cell in puzzle.getCells()) {
-            if (cell.getCandidates().size == 1) {
+            if (cell.candidates.size == 1) {
                 moves.add(Move(cell, getCandidate(cell), "No other candidate for this cell"))
             }
         }
@@ -61,7 +65,7 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
     }
 
     fun getCandidate(cell: Cell): Int {
-        return cell.getCandidates().iterator().next()
+        return cell.candidates.iterator().next()
     }
 
     private fun findUniqueCandidatesInGroup(): Set<Move> {
@@ -76,13 +80,13 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
         val candidates: MutableSet<Move> = LinkedHashSet()
         for (number in 1..9) {
             var nrOfCandidates = 0
-            for (cell in group.getCells()) {
-                if (cell.hasCandidate(number)) {
+            for (cell in group.cells) {
+                if (cell.candidates.contains(number)) {
                     nrOfCandidates++
                 }
             }
             if (nrOfCandidates == 1) {
-                val cell = getFirstGhost(number, group.getCells())
+                val cell = getFirstGhost(number, group.cells)
                 candidates.add(Move(cell, number, String.format("Only possibility in %s", group)))
             }
         }
@@ -91,7 +95,7 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
 
     private fun getFirstGhost(number: Int, cells: Collection<Cell>): Cell {
         for (cell in cells) {
-            if (cell.hasCandidate(number)) {
+            if (cell.candidates.contains(number)) {
                 return cell
             }
         }
@@ -101,6 +105,7 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
     //
     // Eliminate
     //
+
     private fun eliminateCrossGroupDependencies(): Set<Move> {
         val eliminations: MutableSet<Move> = LinkedHashSet()
         for (group in puzzle.getGroups()) {
@@ -118,10 +123,10 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
         overlapping.removeAll(ignore)
         if (overlapping.size == 1) {
             val other = overlapping.iterator().next()
-            val cells: MutableSet<Cell> = LinkedHashSet(other.getCells())
-            cells.removeAll(group.getCells())
+            val cells: MutableSet<Cell> = LinkedHashSet(other.cells)
+            cells.removeAll(group.cells)
             for (cell in cells) {
-                if (!cell.hasCandidate(number)) {
+                if (!cell.candidates.contains(number)) {
                     continue
                 }
                 eliminations.add(Move(cell, number, String.format("Eliminating %s because it needs to be in %s, %s", number, group, other)))
@@ -131,12 +136,13 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
 
     private fun getOverlappingGroupsWithSameNumber(group: Group, number: Int): MutableSet<Group> {
         val overlapping: MutableSet<Group> = HashSet()
-        for (cell in group.getCells()) {
-            if (cell.hasCandidate(number)) {
-                overlapping.addAll(cell.getGroups())
+        for (cell in group.cells) {
+            if (cell.candidates.contains(number)) {
+                overlapping.addAll(cell.groups)
             }
         }
         overlapping.remove(group)
+
         return overlapping
     }
 
@@ -152,40 +158,39 @@ class LogicSolver @JvmOverloads constructor(private val puzzle: Puzzle, private 
         for (group in puzzle.getGroups()) {
             eliminateBasedOnUniqueSets(group, eliminations)
         }
+
         return eliminations
     }
+}
 
-    companion object {
-        fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
-            val candidateSetCount: MutableMap<Set<Int>, Int> = LinkedHashMap()
-            for (cell in group.getCells()) {
-                add(candidateSetCount, cell.getCandidates())
-            }
-            for ((key, value) in candidateSetCount) {
-                if (key.size == value) {
-                    removeOtherDependencies(group, key, eliminations)
+private fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
+    val candidateSetCount: MutableMap<Set<Int>, Int> = LinkedHashMap()
+    for (cell in group.cells) {
+        add(candidateSetCount, cell.candidates)
+    }
+    for ((key, value) in candidateSetCount) {
+        if (key.size == value) {
+            removeOtherDependencies(group, key, eliminations)
+        }
+    }
+}
+
+private fun removeOtherDependencies(group: Group, set: Set<Int>, eliminations: MutableSet<Move>) {
+    for (cell in group.cells) {
+        if (cell.candidates != set) {
+            for (number in set) {
+                if (cell.candidates.contains(number)) {
+                    eliminations.add(Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)))
                 }
             }
         }
+    }
+}
 
-        private fun removeOtherDependencies(group: Group, set: Set<Int>, eliminations: MutableSet<Move>) {
-            for (cell in group.getCells()) {
-                if (cell.getCandidates() != set) {
-                    for (number in set) {
-                        if (cell.hasCandidate(number)) {
-                            eliminations.add(Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)))
-                        }
-                    }
-                }
-            }
-        }
-
-        private fun <T> add(count: MutableMap<T, Int>, something: T) {
-            if (!count.containsKey(something)) {
-                count[something] = 1
-            } else {
-                count[something] = count[something]!! + 1
-            }
-        }
+private fun <T> add(count: MutableMap<T, Int>, something: T) {
+    if (!count.containsKey(something)) {
+        count[something] = 1
+    } else {
+        count[something] = count[something]!! + 1
     }
 }

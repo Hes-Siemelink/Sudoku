@@ -1,6 +1,7 @@
 package hes.sudoku.kt
 
 class RecursiveSolver(private val puzzle: Puzzle) {
+
     private val printer: Printer
 
     init {
@@ -14,7 +15,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
     }
 
     fun solve(moves: MutableSet<Move>): Boolean {
-        if (puzzle.isSolved) {
+        if (puzzle.isSolved()) {
             return true
         }
         val candidates = possibleMoves
@@ -34,7 +35,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
     private fun solve(puzzle: Puzzle, candidates: MutableSet<Move>): Boolean {
         val solver = LogicSolver(puzzle, printer.silentPrinter())
         solver.fillNumbers()
-        if (puzzle.isSolved) {
+        if (puzzle.isSolved()) {
             printer.println("Puzzle solved recursively.")
             return true
         }
@@ -47,8 +48,8 @@ class RecursiveSolver(private val puzzle: Puzzle) {
         private get() {
             val moves = ArrayList<Move>()
             for (cell in puzzle.getCells()) {
-                for (number in cell.getCandidates()) {
-                    moves.add(Move(cell, number, "Recursive guess out of " + cell.getCandidates().size))
+                for (number in cell.candidates) {
+                    moves.add(Move(cell, number, "Recursive guess out of " + cell.candidates.size))
                 }
             }
             moves.sortWith(CellCandidateComparator())
@@ -57,7 +58,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
 
     private class CellCandidateComparator : Comparator<Move> {
         override fun compare(o1: Move, o2: Move): Int {
-            return o1.cell.getCandidates().size - o2.cell.getCandidates().size
+            return o1.cell.candidates.size - o2.cell.candidates.size
         }
     }
 }

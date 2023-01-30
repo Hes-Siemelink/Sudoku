@@ -81,7 +81,7 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
 
     open fun silentPrinter(): Printer {
         return object : Printer(Puzzle(false)) {
-//            override fun println(message: Any?, vararg args: Any?) {}
+            override fun println(message: Any, vararg args: Any?) {}
             override fun printStart() {}
             override fun printEnd() {}
             override fun printPuzzle() {}

@@ -1,10 +1,17 @@
 package hes.sudoku.kt
 
-import java.util.*
-
 class Puzzle {
+
     private val cells: MutableList<Cell> = ArrayList(81)
     private val groups: MutableList<Group> = ArrayList(27)
+
+    val boxes: List<Group>
+        get() = groups.subList(0, 9)
+    val rows: List<Group>
+        get() = groups.subList(9, 18)
+    val columns: List<Group>
+        get() = groups.subList(18, 27)
+
 
     constructor() : this(true)
 
@@ -23,19 +30,12 @@ class Puzzle {
     }
 
     fun getCells(): List<Cell> {
-        return Collections.unmodifiableList(cells)
+        return cells
     }
 
     fun getGroups(): List<Group> {
-        return Collections.unmodifiableList(groups)
+        return groups
     }
-
-    val boxes: List<Group>
-        get() = groups.subList(0, 9)
-    val rows: List<Group>
-        get() = groups.subList(9, 18)
-    val columns: List<Group>
-        get() = groups.subList(18, 27)
 
     private fun initCells() {
         for (i in 0..80) {
@@ -116,21 +116,21 @@ class Puzzle {
 
         // Update cells
         for (i in groups.indices) {
-            if (groups[i].getCells().contains(cell)) {
+            if (groups[i].cells.contains(cell)) {
                 groups[i].eliminate(number)
             }
         }
     }
 
-    val isSolved: Boolean
-        get() {
-            for (cell in cells) {
-                if (!cell.isKnown) {
-                    return false
-                }
+    fun isSolved(): Boolean {
+        for (cell in cells) {
+            if (!cell.isKnown) {
+                return false
             }
-            return true
         }
+
+        return true
+    }
 
     //
     // Parse

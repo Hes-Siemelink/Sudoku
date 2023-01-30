@@ -24,17 +24,6 @@ public class Group {
         cells.forEach(c -> c.eliminate(number));
     }
 
-    public int candidates() {
-        int candidates = 9;
-        for (Cell cell : cells) {
-            if (cell.isKnown()) {
-                candidates--;
-            }
-        }
-
-        return candidates;
-    }
-
     @Override
     public String toString() {
         return name;

@@ -108,7 +108,7 @@ public class LogicSolver {
         for (int number = 1; number < 10; number++) {
             int nrOfCandidates = 0;
             for (Cell cell : group.getCells()) {
-                if (cell.hasCandidate(number)) {
+                if (cell.getCandidates().contains(number)) {
                     nrOfCandidates++;
                 }
             }
@@ -123,7 +123,7 @@ public class LogicSolver {
 
     private Cell getFirstGhost(Integer number, Collection<Cell> cells) {
         for (Cell cell : cells) {
-            if (cell.hasCandidate(number)) {
+            if (cell.getCandidates().contains(number)) {
                 return cell;
             }
         }
@@ -161,7 +161,7 @@ public class LogicSolver {
             cells.removeAll(group.getCells());
 
             for (Cell cell: cells) {
-                if (!cell.hasCandidate(number)) {
+                if (!cell.getCandidates().contains(number)) {
                     continue;
                 }
                 eliminations.add(new Move(cell, number, String.format("Eliminating %s because it needs to be in %s, %s", number, group, other)));
@@ -172,7 +172,7 @@ public class LogicSolver {
     private Set<Group> getOverlappingGroupsWithSameNumber(Group group, Integer number) {
         Set<Group> overlapping = new HashSet<>();
         for (Cell cell : group.getCells()) {
-            if (cell.hasCandidate(number)) {
+            if (cell.getCandidates().contains(number)) {
                 overlapping.addAll(cell.getGroups());
             }
         }
@@ -215,7 +215,7 @@ public class LogicSolver {
         for (Cell cell : group.getCells()) {
             if (!cell.getCandidates().equals(set)) {
                 for (Integer number : set) {
-                    if (cell.hasCandidate(number)) {
+                    if (cell.getCandidates().contains(number)) {
                         eliminations.add(new Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)));
                     }
                 }

@@ -1,6 +1,6 @@
 package hes.sudoku.kt
 
-import java.util.*
+import java.util.Objects
 
 data class Move(val cell: Cell, val number: Int, val reason: String) {
 

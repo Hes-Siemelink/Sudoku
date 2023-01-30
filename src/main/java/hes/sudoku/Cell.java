@@ -108,7 +108,4 @@ public class Cell {
         return String.format("Row %s column %s", row + 1, column + 1);
     }
 
-    public boolean hasCandidate(Integer number) {
-        return candidates.contains(number);
-    }
 }
