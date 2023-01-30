@@ -99,7 +99,7 @@ public class Printer {
     }
 
     public static Printer silentPrinter() {
-        return new Printer(null) {
+        return new Printer(new Puzzle(false)) {
             @Override
             public void println(Object message, Object... args) { }
 

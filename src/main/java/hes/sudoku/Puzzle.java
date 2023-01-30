@@ -6,20 +6,25 @@ import java.util.List;
 
 public class Puzzle {
 
-    private final List<Cell> cells;
-    private final List<Group> groups;
+    private final List<Cell> cells = new ArrayList<>(81);
+    private final List<Group> groups = new ArrayList<>(27);;
 
     public Puzzle() {
-        cells = initCells();
-        groups = initGroups();
+        this(true);
+    }
+
+    Puzzle(boolean init) {
+        if (init) {
+            initCells();
+            initGroups();
+        }
     }
 
     public Puzzle(Puzzle original) {
-        cells = new ArrayList<>(81);
         for (Cell cell : original.getCells()) {
             cells.add(new Cell(cell));
         }
-        groups = initGroups();
+        initGroups();
     }
 
     public List<Cell> getCells() {
@@ -42,16 +47,13 @@ public class Puzzle {
         return groups.subList(18, 27);
     }
 
-    private List<Cell> initCells() {
-        List<Cell> cells = new ArrayList<>(81);
+    private void initCells() {
         for (int i = 0; i < 81; i++) {
             cells.add(new Cell(i / 9, i % 9));
         }
-        return cells;
     }
 
-    private List<Group> initGroups() {
-        List<Group> groups = new ArrayList<>(27);
+    private void initGroups() {
 
         int group = 0;
 
@@ -75,26 +77,24 @@ public class Puzzle {
         for (int column = 0; column < 9; column++) {
             groups.add(initColumn("Col " + (column + 1), column));
         }
-
-        return groups;
     }
 
     public Group initBox(String name, int startX, int startY) {
-        Group block = new Group(name);
+        Group box = new Group(name);
 
-        block.addCell(getCell(startX + 0, startY + 0));
-        block.addCell(getCell(startX + 1, startY + 0));
-        block.addCell(getCell(startX + 2, startY + 0));
+        box.addCell(getCell(startX + 0, startY + 0));
+        box.addCell(getCell(startX + 1, startY + 0));
+        box.addCell(getCell(startX + 2, startY + 0));
 
-        block.addCell(getCell(startX + 0, startY + 1));
-        block.addCell(getCell(startX + 1, startY + 1));
-        block.addCell(getCell(startX + 2, startY + 1));
+        box.addCell(getCell(startX + 0, startY + 1));
+        box.addCell(getCell(startX + 1, startY + 1));
+        box.addCell(getCell(startX + 2, startY + 1));
 
-        block.addCell(getCell(startX + 0, startY + 2));
-        block.addCell(getCell(startX + 1, startY + 2));
-        block.addCell(getCell(startX + 2, startY + 2));
+        box.addCell(getCell(startX + 0, startY + 2));
+        box.addCell(getCell(startX + 1, startY + 2));
+        box.addCell(getCell(startX + 2, startY + 2));
 
-        return block;
+        return box;
     }
 
     private Group initRow(String name, int y) {

@@ -182,7 +182,7 @@ public class LogicSolver {
     }
 
     //
-    // Eliminate candidates in a group when there is a subset of n candidates occuring n times.
+    // Eliminate candidates in a group when there is a subset of n candidates occurring n times.
     // The elements of that particular set can't be candidates anywhere else in that group then.
     // For example, you have a row that have two places with {2,4} as candidates. Then another cell
     // with {2, 4, 6} should not have {2, 4}.
