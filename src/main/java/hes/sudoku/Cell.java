@@ -51,7 +51,7 @@ public class Cell {
     }
 
     // For unit tests
-    void setCandidates(Set<Integer> candidates) {
+    void _setCandidates(Set<Integer> candidates) {
         this.candidates = candidates;
     }
 
