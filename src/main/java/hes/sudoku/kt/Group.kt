@@ -3,7 +3,7 @@ package hes.sudoku.kt
 class Group(
         private val name: String) {
 
-    private val _cells: MutableSet<Cell> = LinkedHashSet(9)
+    private val _cells = mutableSetOf<Cell>()
 
     val cells: Set<Cell> = _cells
 

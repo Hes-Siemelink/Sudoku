@@ -7,8 +7,8 @@ class Cell {
     var number = 0
         private set
 
-    private val _candidates: MutableSet<Int> = LinkedHashSet(9)
-    private val _groups: MutableSet<Group> = LinkedHashSet()
+    private val _candidates = mutableSetOf<Int>()
+    private val _groups = mutableSetOf<Group>()
 
     // Derived properties
 
@@ -26,7 +26,9 @@ class Cell {
 
     val candidatesAsString: String
         get() {
-            if (known) return String.format("        .")
+            if (known) {
+                return String.format("        .")
+            }
 
             val builder = StringBuilder(9)
             _candidates.forEach { builder.append(it) }

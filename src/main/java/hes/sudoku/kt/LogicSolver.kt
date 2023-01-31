@@ -11,11 +11,12 @@ class LogicSolver constructor(
     fun fillNumbers(): Boolean {
         var moves: MutableSet<Move>
         do {
-            moves = LinkedHashSet()
+            moves = mutableSetOf()
             moves.addAll(findUniqueCandidatesInGroup())
             moves.addAll(findUniqueCandidates())
             applyMoves(moves)
         } while (!moves.isEmpty())
+
         printer.println("No more moves found.")
 
         return !moves.isEmpty()
@@ -24,11 +25,12 @@ class LogicSolver constructor(
     private fun eliminateCandidates(): Boolean {
         var eliminations: MutableSet<Move>
         do {
-            eliminations = LinkedHashSet()
+            eliminations = mutableSetOf()
             eliminations.addAll(eliminateCrossGroupDependencies())
             eliminations.addAll(eliminateBasedOnUniqueSetsInGroup())
             applyEliminations(eliminations)
         } while (!eliminations.isEmpty())
+
         printer.println("No more eliminations found.")
 
         return !eliminations.isEmpty()
@@ -45,10 +47,11 @@ class LogicSolver constructor(
         if (!eliminations.isEmpty()) {
             printer.println("\nEliminating candidates:")
         }
-        for (elimination in eliminations) {
-            printer.println(elimination)
-            val cell = puzzle.getCell(elimination.cell.column, elimination.cell.row)
-            cell.eliminate(elimination.number)
+
+        for (removal in eliminations) {
+            printer.println(removal)
+            puzzle.getCell(removal.cell.column, removal.cell.row)
+                    .eliminate(removal.number)
         }
     }
 
@@ -57,21 +60,18 @@ class LogicSolver constructor(
     //
 
     private fun findUniqueCandidates(): Set<Move> {
-        val moves: MutableSet<Move> = LinkedHashSet()
-        for (cell in puzzle.cells) {
-            if (cell.candidates.size == 1) {
-                moves.add(Move(cell, getCandidate(cell), "No other candidate for this cell"))
-            }
+        return puzzle.cells.filter { it.candidates.size == 1 }
+                .mapTo(mutableSetOf()) { cell ->
+                    Move(cell, getCandidate(cell), "No other candidate for this cell")
         }
-        return moves
     }
 
     fun getCandidate(cell: Cell): Int {
-        return cell.candidates.iterator().next()
+        return cell.candidates.first()
     }
 
     private fun findUniqueCandidatesInGroup(): Set<Move> {
-        val candidates: MutableSet<Move> = LinkedHashSet()
+        val candidates = mutableSetOf<Move>()
         for (group in puzzle.groups) {
             candidates.addAll(findGhostCandidates(group))
         }
@@ -79,7 +79,7 @@ class LogicSolver constructor(
     }
 
     fun findGhostCandidates(group: Group): Set<Move> {
-        val candidates: MutableSet<Move> = LinkedHashSet()
+        val candidates = mutableSetOf<Move>()
         for (number in 1..9) {
             var nrOfCandidates = 0
             for (cell in group.cells) {
@@ -96,12 +96,7 @@ class LogicSolver constructor(
     }
 
     private fun getFirstGhost(number: Int, cells: Collection<Cell>): Cell {
-        for (cell in cells) {
-            if (cell.candidates.contains(number)) {
-                return cell
-            }
-        }
-        throw IllegalStateException(String.format("No ghost candidate %s in %s", number, cells))
+        return cells.filter { it.candidates.contains(number) }.first()
     }
 
     //
@@ -109,7 +104,7 @@ class LogicSolver constructor(
     //
 
     private fun eliminateCrossGroupDependencies(): Set<Move> {
-        val eliminations: MutableSet<Move> = LinkedHashSet()
+        val eliminations = mutableSetOf<Move>()
         for (group in puzzle.groups) {
             for (number in 1..9) {
                 eliminateCrossGroupDependencies(group, number, puzzle.boxes, eliminations)
@@ -125,23 +120,18 @@ class LogicSolver constructor(
         overlapping.removeAll(ignore)
         if (overlapping.size == 1) {
             val other = overlapping.iterator().next()
-            val cells: MutableSet<Cell> = LinkedHashSet(other.cells)
+            val cells = other.cells.toMutableSet()
             cells.removeAll(group.cells)
-            for (cell in cells) {
-                if (!cell.candidates.contains(number)) {
-                    continue
-                }
+            for (cell in cells.filter { it.candidates.contains(number) }) {
                 eliminations.add(Move(cell, number, String.format("Eliminating %s because it needs to be in %s, %s", number, group, other)))
             }
         }
     }
 
     private fun getOverlappingGroupsWithSameNumber(group: Group, number: Int): MutableSet<Group> {
-        val overlapping: MutableSet<Group> = HashSet()
-        for (cell in group.cells) {
-            if (cell.candidates.contains(number)) {
-                overlapping.addAll(cell.groups)
-            }
+        val overlapping = mutableSetOf<Group>()
+        for (cell in group.cells.filter { it.candidates.contains(number) }) {
+            overlapping.addAll(cell.groups)
         }
         overlapping.remove(group)
 
@@ -170,6 +160,7 @@ fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
     for (cell in group.cells) {
         add(candidateSetCount, cell.candidates)
     }
+
     for ((key, value) in candidateSetCount) {
         if (key.size == value) {
             removeOtherDependencies(group, key, eliminations)
@@ -178,13 +169,9 @@ fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
 }
 
 private fun removeOtherDependencies(group: Group, set: Set<Int>, eliminations: MutableSet<Move>) {
-    for (cell in group.cells) {
-        if (cell.candidates != set) {
-            for (number in set) {
-                if (cell.candidates.contains(number)) {
-                    eliminations.add(Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)))
-                }
-            }
+    for (cell in group.cells.filter { set != it.candidates }) {
+        for (number in set.filter { cell.candidates.contains(it) }) {
+            eliminations.add(Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)))
         }
     }
 }

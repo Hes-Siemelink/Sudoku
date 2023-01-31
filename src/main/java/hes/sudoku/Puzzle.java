@@ -129,9 +129,9 @@ public class Puzzle {
         cell.setNumber(number);
 
         // Update cells
-        for (int i = 0; i < groups.size(); i++) {
-            if (groups.get(i).getCells().contains(cell)) {
-                groups.get(i).eliminate(number);
+        for (Group group : groups) {
+            if (group.getCells().contains(cell)) {
+                group.eliminate(number);
             }
         }
     }

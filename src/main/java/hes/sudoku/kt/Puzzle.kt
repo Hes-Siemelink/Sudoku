@@ -32,8 +32,8 @@ class Puzzle {
     }
 
     constructor(original: Puzzle) {
-        for (cell in original._cells) {
-            _cells.add(Cell(cell))
+        original.cells.forEach {
+            _cells.add(Cell(it))
         }
         initGroups()
     }
@@ -115,10 +115,8 @@ class Puzzle {
         cell.setNumber(number)
 
         // Update cells
-        for (i in _groups.indices) {
-            if (_groups[i].cells.contains(cell)) {
-                _groups[i].eliminate(number)
-            }
+        _groups.filter { it.cells.contains(cell) }.forEach {
+            it.eliminate(number)
         }
     }
 

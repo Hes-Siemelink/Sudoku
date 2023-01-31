@@ -5,8 +5,9 @@ class RecursiveSolver(private val puzzle: Puzzle) {
     private val printer: Printer = Printer(puzzle)
 
     fun solve(): Set<Move> {
-        val moves: MutableSet<Move> = LinkedHashSet()
+        val moves = mutableSetOf<Move>()
         solve(moves)
+
         return moves
     }
 
@@ -31,18 +32,21 @@ class RecursiveSolver(private val puzzle: Puzzle) {
     private fun solve(puzzle: Puzzle, candidates: MutableSet<Move>): Boolean {
         val solver = LogicSolver(puzzle, printer.silentPrinter())
         solver.fillNumbers()
+
         if (puzzle.isSolved()) {
             printer.println("Puzzle solved recursively.")
             return true
         }
+
         Printer(puzzle).printPuzzle()
         printer.println("Puzzle not solved. Trying recursively.")
+
         return RecursiveSolver(puzzle).solve(candidates)
     }
 
     private val possibleMoves: Collection<Move>
         get() {
-            val moves = ArrayList<Move>()
+            val moves = mutableListOf<Move>()
             for (cell in puzzle.cells) {
                 for (number in cell.candidates) {
                     moves.add(Move(cell, number, "Recursive guess out of " + cell.candidates.size))
