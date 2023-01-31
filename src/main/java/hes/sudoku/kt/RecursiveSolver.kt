@@ -2,11 +2,7 @@ package hes.sudoku.kt
 
 class RecursiveSolver(private val puzzle: Puzzle) {
 
-    private val printer: Printer
-
-    init {
-        printer = Printer(puzzle)
-    }
+    private val printer: Printer = Printer(puzzle)
 
     fun solve(): Set<Move> {
         val moves: MutableSet<Move> = LinkedHashSet()
@@ -14,7 +10,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
         return moves
     }
 
-    fun solve(moves: MutableSet<Move>): Boolean {
+    private fun solve(moves: MutableSet<Move>): Boolean {
         if (puzzle.isSolved()) {
             return true
         }
@@ -45,14 +41,15 @@ class RecursiveSolver(private val puzzle: Puzzle) {
     }
 
     private val possibleMoves: Collection<Move>
-        private get() {
+        get() {
             val moves = ArrayList<Move>()
-            for (cell in puzzle.getCells()) {
+            for (cell in puzzle.cells) {
                 for (number in cell.candidates) {
                     moves.add(Move(cell, number, "Recursive guess out of " + cell.candidates.size))
                 }
             }
             moves.sortWith(CellCandidateComparator())
+
             return moves
         }
 

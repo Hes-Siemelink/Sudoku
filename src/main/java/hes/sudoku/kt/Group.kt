@@ -1,8 +1,10 @@
 package hes.sudoku.kt
 
-class Group(private val name: String) {
+class Group(
+        private val name: String) {
 
     private val _cells: MutableSet<Cell> = LinkedHashSet(9)
+
     val cells: Set<Cell> = _cells
 
     fun addCell(cell: Cell) {

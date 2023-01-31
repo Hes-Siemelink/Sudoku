@@ -29,11 +29,11 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
 
     open fun printPuzzle() {
         out.println("+-------+-------+-------+")
-        for (i in puzzle!!.getCells().indices) {
+        for (i in puzzle.cells.indices) {
             if (i % 9 == 0) {
                 out.print("| ")
             }
-            out.print(puzzle.getCells()[i].text())
+            out.print(puzzle.cells[i].text)
 
             // Block divider
             val next = i + 1
@@ -55,11 +55,11 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
 
     open fun printAllCandidates() {
         out.println("+----------------------------+-----------------------------+-----------------------------+")
-        for (i in puzzle!!.getCells().indices) {
+        for (i in puzzle.cells.indices) {
             if (i % 9 == 0) {
                 out.print("|")
             }
-            out.print(puzzle.getCells()[i].allCandidatesAsString())
+            out.print(puzzle.cells[i].candidatesAsString)
 
             // Block divider
             val next = i + 1
@@ -79,7 +79,7 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
         }
     }
 
-    open fun silentPrinter(): Printer {
+    fun silentPrinter(): Printer {
         return object : Printer(Puzzle(false)) {
             override fun println(message: Any, vararg args: Any?) {}
             override fun printStart() {}

@@ -1,6 +1,8 @@
 package hes.sudoku.kt
 
-class LogicSolver constructor(private val puzzle: Puzzle, private val printer: Printer = Printer(puzzle)) {
+class LogicSolver constructor(
+        private val puzzle: Puzzle,
+        private val printer: Printer = Printer(puzzle)) {
 
     fun solve() {
         while (fillNumbers() || eliminateCandidates());
@@ -19,7 +21,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
         return !moves.isEmpty()
     }
 
-    fun eliminateCandidates(): Boolean {
+    private fun eliminateCandidates(): Boolean {
         var eliminations: MutableSet<Move>
         do {
             eliminations = LinkedHashSet()
@@ -45,7 +47,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
         }
         for (elimination in eliminations) {
             printer.println(elimination)
-            val cell = puzzle.getCell(elimination!!.cell.column, elimination.cell.row)
+            val cell = puzzle.getCell(elimination.cell.column, elimination.cell.row)
             cell.eliminate(elimination.number)
         }
     }
@@ -56,7 +58,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
 
     private fun findUniqueCandidates(): Set<Move> {
         val moves: MutableSet<Move> = LinkedHashSet()
-        for (cell in puzzle.getCells()) {
+        for (cell in puzzle.cells) {
             if (cell.candidates.size == 1) {
                 moves.add(Move(cell, getCandidate(cell), "No other candidate for this cell"))
             }
@@ -70,7 +72,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
 
     private fun findUniqueCandidatesInGroup(): Set<Move> {
         val candidates: MutableSet<Move> = LinkedHashSet()
-        for (group in puzzle.getGroups()) {
+        for (group in puzzle.groups) {
             candidates.addAll(findGhostCandidates(group))
         }
         return candidates
@@ -108,7 +110,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
 
     private fun eliminateCrossGroupDependencies(): Set<Move> {
         val eliminations: MutableSet<Move> = LinkedHashSet()
-        for (group in puzzle.getGroups()) {
+        for (group in puzzle.groups) {
             for (number in 1..9) {
                 eliminateCrossGroupDependencies(group, number, puzzle.boxes, eliminations)
                 eliminateCrossGroupDependencies(group, number, puzzle.rows, eliminations)
@@ -155,7 +157,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
 
     fun eliminateBasedOnUniqueSetsInGroup(): Set<Move> {
         val eliminations: MutableSet<Move> = LinkedHashSet()
-        for (group in puzzle.getGroups()) {
+        for (group in puzzle.groups) {
             eliminateBasedOnUniqueSets(group, eliminations)
         }
 
@@ -163,7 +165,7 @@ class LogicSolver constructor(private val puzzle: Puzzle, private val printer: P
     }
 }
 
-private fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
+fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
     val candidateSetCount: MutableMap<Set<Int>, Int> = LinkedHashMap()
     for (cell in group.cells) {
         add(candidateSetCount, cell.candidates)

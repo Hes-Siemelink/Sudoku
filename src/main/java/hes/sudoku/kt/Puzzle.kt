@@ -2,16 +2,25 @@ package hes.sudoku.kt
 
 class Puzzle {
 
-    private val cells: MutableList<Cell> = ArrayList(81)
-    private val groups: MutableList<Group> = ArrayList(27)
+    private val _cells: MutableList<Cell> = ArrayList(81)
+    private val _groups: MutableList<Group> = ArrayList(27)
 
+    // Derived properties
+
+    val cells: List<Cell>
+        get() = _cells
+    val groups: List<Group>
+        get() = _groups
     val boxes: List<Group>
-        get() = groups.subList(0, 9)
+        get() = _groups.subList(0, 9)
     val rows: List<Group>
-        get() = groups.subList(9, 18)
+        get() = _groups.subList(9, 18)
     val columns: List<Group>
-        get() = groups.subList(18, 27)
+        get() = _groups.subList(18, 27)
 
+    //
+    // Init
+    //
 
     constructor() : this(true)
 
@@ -23,48 +32,39 @@ class Puzzle {
     }
 
     constructor(original: Puzzle) {
-        for (cell in original.getCells()) {
-            cells.add(Cell(cell))
+        for (cell in original._cells) {
+            _cells.add(Cell(cell))
         }
         initGroups()
     }
 
-    fun getCells(): List<Cell> {
-        return cells
-    }
-
-    fun getGroups(): List<Group> {
-        return groups
-    }
-
     private fun initCells() {
         for (i in 0..80) {
-            cells.add(Cell(i / 9, i % 9))
+            _cells.add(Cell(i / 9, i % 9))
         }
     }
 
     private fun initGroups() {
-        val group = 0
 
         // Boxes
-        groups.add(initBox("Box 1", 0, 0))
-        groups.add(initBox("Box 2", 3, 0))
-        groups.add(initBox("Box 3", 6, 0))
-        groups.add(initBox("Box 4", 0, 3))
-        groups.add(initBox("Box 5", 3, 3))
-        groups.add(initBox("Box 6", 6, 3))
-        groups.add(initBox("Box 7", 0, 6))
-        groups.add(initBox("Box 8", 3, 6))
-        groups.add(initBox("Box 9", 6, 6))
+        _groups.add(initBox("Box 1", 0, 0))
+        _groups.add(initBox("Box 2", 3, 0))
+        _groups.add(initBox("Box 3", 6, 0))
+        _groups.add(initBox("Box 4", 0, 3))
+        _groups.add(initBox("Box 5", 3, 3))
+        _groups.add(initBox("Box 6", 6, 3))
+        _groups.add(initBox("Box 7", 0, 6))
+        _groups.add(initBox("Box 8", 3, 6))
+        _groups.add(initBox("Box 9", 6, 6))
 
         // Rows
         for (row in 0..8) {
-            groups.add(initRow("Row " + (row + 1), row))
+            _groups.add(initRow("Row " + (row + 1), row))
         }
 
         // Columns
         for (column in 0..8) {
-            groups.add(initColumn("Col " + (column + 1), column))
+            _groups.add(initColumn("Col " + (column + 1), column))
         }
     }
 
@@ -104,7 +104,7 @@ class Puzzle {
     //
 
     fun getCell(x: Int, y: Int): Cell {
-        return cells[y * 9 + x]
+        return _cells[y * 9 + x]
     }
 
     fun apply(move: Move) {
@@ -115,16 +115,16 @@ class Puzzle {
         cell.setNumber(number)
 
         // Update cells
-        for (i in groups.indices) {
-            if (groups[i].cells.contains(cell)) {
-                groups[i].eliminate(number)
+        for (i in _groups.indices) {
+            if (_groups[i].cells.contains(cell)) {
+                _groups[i].eliminate(number)
             }
         }
     }
 
     fun isSolved(): Boolean {
-        for (cell in cells) {
-            if (!cell.isKnown) {
+        for (cell in _cells) {
+            if (!cell.known) {
                 return false
             }
         }
