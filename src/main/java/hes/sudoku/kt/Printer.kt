@@ -6,13 +6,8 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
 
     private var start = System.currentTimeMillis()
 
-    open fun println(message: Any, vararg args: Any?) {
-        if (args == null) {
-            out.println(message)
-        } else {
-            out.format(message.toString(), *args)
-            out.println()
-        }
+    open fun println(message: Any) {
+        out.println(message)
     }
 
     open fun printStart() {
@@ -81,7 +76,7 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
 
     fun silentPrinter(): Printer {
         return object : Printer(Puzzle(false)) {
-            override fun println(message: Any, vararg args: Any?) {}
+            override fun println(message: Any) {}
             override fun printStart() {}
             override fun printEnd() {}
             override fun printPuzzle() {}

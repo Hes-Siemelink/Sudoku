@@ -30,10 +30,10 @@ class Cell {
                 return "        ."
             }
 
-            val builder = StringBuilder(9)
-            _candidates.forEach { builder.append(it) }
-
-            return String.format("%9s", builder)
+            val candidateString = buildString(9) {
+                _candidates.forEach { append(it) }
+            }
+            return String.format("%9s", candidateString)
         }
 
     override fun toString(): String {

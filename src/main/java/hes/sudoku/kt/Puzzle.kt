@@ -115,7 +115,7 @@ class Puzzle {
         cell.setNumber(number)
 
         // Update cells
-        _groups.filter { it.cells.contains(cell) }.forEach {
+        _groups.filter { cell in it.cells }.forEach {
             it.eliminate(number)
         }
     }

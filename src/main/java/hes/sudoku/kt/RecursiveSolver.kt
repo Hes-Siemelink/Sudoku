@@ -24,7 +24,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
                 moves.add(candidate)
                 return true
             }
-            printer.println("%s does not solve the puzzle", candidate)
+            printer.println("$candidate does not solve the puzzle")
         }
         return false
     }

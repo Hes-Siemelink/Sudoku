@@ -1,8 +1,8 @@
 package hes.sudoku.kt
 
 class LogicSolver constructor(
-        private val puzzle: Puzzle,
-        private val printer: Printer = Printer(puzzle)) {
+        val puzzle: Puzzle,
+        val printer: Printer = Printer(puzzle)) {
 
     fun solve() {
         while (fillNumbers() || eliminateCandidates());
@@ -83,7 +83,7 @@ class LogicSolver constructor(
         for (number in 1..9) {
             var nrOfCandidates = 0
             for (cell in group.cells) {
-                if (cell.candidates.contains(number)) {
+                if (number in cell.candidates) {
                     nrOfCandidates++
                 }
             }
@@ -96,7 +96,7 @@ class LogicSolver constructor(
     }
 
     private fun getFirstGhost(number: Int, cells: Collection<Cell>): Cell {
-        return cells.filter { it.candidates.contains(number) }.first()
+        return cells.filter { number in it.candidates }.first()
     }
 
     //
@@ -122,7 +122,7 @@ class LogicSolver constructor(
             val other = overlapping.iterator().next()
             val cells = other.cells.toMutableSet()
             cells.removeAll(group.cells)
-            for (cell in cells.filter { it.candidates.contains(number) }) {
+            for (cell in cells.filter { number in it.candidates }) {
                 eliminations.add(Move(cell, number).withDescription("Eliminating $number because it needs to be in $group, $other"))
             }
         }
@@ -130,7 +130,7 @@ class LogicSolver constructor(
 
     private fun getOverlappingGroupsWithSameNumber(group: Group, number: Int): MutableSet<Group> {
         val overlapping = mutableSetOf<Group>()
-        for (cell in group.cells.filter { it.candidates.contains(number) }) {
+        for (cell in group.cells.filter { number in it.candidates }) {
             overlapping.addAll(cell.groups)
         }
         overlapping.remove(group)
@@ -169,8 +169,8 @@ fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
 }
 
 private fun removeOtherDependencies(group: Group, set: Set<Int>, eliminations: MutableSet<Move>) {
-    for (cell in group.cells.filter { set != it.candidates }) {
-        for (number in set.filter { cell.candidates.contains(it) }) {
+    for (cell in group.cells.filter { cell -> cell.candidates != set }) {
+        for (number in set.filter { number -> number in cell.candidates }) {
             eliminations.add(Move(cell, number).withDescription("Eliminate $number from $cell, because it is in a unique set $set elsewhere in $group"))
         }
     }
