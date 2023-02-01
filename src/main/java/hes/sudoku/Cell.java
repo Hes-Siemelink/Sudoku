@@ -94,7 +94,7 @@ public class Cell {
 
     public String allCandidatesAsString() {
         if (known) {
-            return String.format("        .");
+            return "        .";
         }
 
         StringBuilder builder = new StringBuilder(9);

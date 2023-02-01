@@ -62,7 +62,7 @@ class LogicSolver constructor(
     private fun findUniqueCandidates(): Set<Move> {
         return puzzle.cells.filter { it.candidates.size == 1 }
                 .mapTo(mutableSetOf()) { cell ->
-                    Move(cell, getCandidate(cell), "No other candidate for this cell")
+                    Move(cell, getCandidate(cell)).withDescription("No other candidate for this cell")
         }
     }
 
@@ -89,7 +89,7 @@ class LogicSolver constructor(
             }
             if (nrOfCandidates == 1) {
                 val cell = getFirstGhost(number, group.cells)
-                candidates.add(Move(cell, number, String.format("Only possibility in %s", group)))
+                candidates.add(Move(cell, number).withDescription("Only possibility in $group"))
             }
         }
         return candidates
@@ -123,7 +123,7 @@ class LogicSolver constructor(
             val cells = other.cells.toMutableSet()
             cells.removeAll(group.cells)
             for (cell in cells.filter { it.candidates.contains(number) }) {
-                eliminations.add(Move(cell, number, String.format("Eliminating %s because it needs to be in %s, %s", number, group, other)))
+                eliminations.add(Move(cell, number).withDescription("Eliminating $number because it needs to be in $group, $other"))
             }
         }
     }
@@ -171,7 +171,7 @@ fun eliminateBasedOnUniqueSets(group: Group, eliminations: MutableSet<Move>) {
 private fun removeOtherDependencies(group: Group, set: Set<Int>, eliminations: MutableSet<Move>) {
     for (cell in group.cells.filter { set != it.candidates }) {
         for (number in set.filter { cell.candidates.contains(it) }) {
-            eliminations.add(Move(cell, number, String.format("Eliminate %s from %s, because it is in a unique set %s elsewhere in %s", number, cell, set, group)))
+            eliminations.add(Move(cell, number).withDescription("Eliminate $number from $cell, because it is in a unique set $set elsewhere in $group"))
         }
     }
 }

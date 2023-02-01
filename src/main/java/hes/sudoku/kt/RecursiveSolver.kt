@@ -49,7 +49,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
             val moves = mutableListOf<Move>()
             for (cell in puzzle.cells) {
                 for (number in cell.candidates) {
-                    moves.add(Move(cell, number, "Recursive guess out of " + cell.candidates.size))
+                    moves.add(Move(cell, number).withDescription("Recursive guess out of " + cell.candidates.size))
                 }
             }
             moves.sortWith(CellCandidateComparator())

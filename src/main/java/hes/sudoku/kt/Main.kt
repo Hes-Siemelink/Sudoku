@@ -28,7 +28,7 @@ object Main {
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     val puzzle = Puzzle.parse(Samples.HARD)
     Main.solve(puzzle)
 }

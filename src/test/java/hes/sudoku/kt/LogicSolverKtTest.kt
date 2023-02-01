@@ -23,7 +23,7 @@ class LogicSolverKtTest {
         eliminateBasedOnUniqueSets(group, eliminations)
 
         Assertions.assertThat(eliminations).hasSize(2)
-        Assertions.assertThat(eliminations).contains(Move(cell_0, 2, ""))
-        Assertions.assertThat(eliminations).contains(Move(cell_0, 3, ""))
+        Assertions.assertThat(eliminations).contains(Move(cell_0, 2))
+        Assertions.assertThat(eliminations).contains(Move(cell_0, 3))
     }
 }

@@ -19,7 +19,7 @@ class Cell {
     val groups: Set<Group> = _groups
 
     val name: String
-        get() = String.format("Row %s column %s", row + 1, column + 1)
+        get() = "Row ${row + 1} column ${column + 1}"
 
     val text: String
         get() = if (known) "$number " else ". "
@@ -27,7 +27,7 @@ class Cell {
     val candidatesAsString: String
         get() {
             if (known) {
-                return String.format("        .")
+                return "        ."
             }
 
             val builder = StringBuilder(9)
@@ -81,8 +81,6 @@ class Cell {
 
     fun eliminate(number: Int?) {
         _candidates.remove(number)
-        check(!(!known && _candidates.size == 0)) { String.format("No more candidates for %s after eliminating %s", toString(), number) }
+        check(!(!known && _candidates.size == 0)) { "No more candidates for $this after eliminating %$number" }
     }
-
-
 }
