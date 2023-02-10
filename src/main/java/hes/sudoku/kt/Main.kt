@@ -3,7 +3,7 @@ package hes.sudoku.kt
 object Main {
 
     fun solve(puzzle: Puzzle) {
-        val printer = Printer(puzzle)
+        val printer = DefaultPrinter(puzzle)
         val solver = LogicSolver(puzzle)
 
         // Print

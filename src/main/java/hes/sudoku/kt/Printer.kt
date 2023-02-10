@@ -2,35 +2,70 @@ package hes.sudoku.kt
 
 import java.io.PrintStream
 
-open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out: PrintStream = System.out) {
+interface Printer {
+
+    fun println(message: Any)
+
+    fun printStart()
+
+    fun printEnd()
+
+    fun printPuzzle()
+
+    fun printAllCandidates()
+}
+
+class DefaultPrinter(
+        private val puzzle: Puzzle,
+        private val out: PrintStream = System.out) : Printer {
 
     private var start = System.currentTimeMillis()
 
-    open fun println(message: Any) {
+    override fun println(message: Any) {
         out.println(message)
     }
 
-    open fun printStart() {
+    override fun printStart() {
         printPuzzle()
+        printAllCandidates()
         start = System.currentTimeMillis()
     }
 
-    open fun printEnd() {
+    override fun printEnd() {
         val duration = System.currentTimeMillis() - start
         out.println("\nSolution:")
         printPuzzle()
         System.out.format("Solved in %s ms.\n", duration)
     }
 
-    open fun printPuzzle() {
-        out.println("+-------+-------+-------+")
+    override fun printPuzzle() {
+        printBox("+-------+-------+-------+") {
+            it.text
+        }
+    }
+
+    override fun printAllCandidates() {
+        printBox("+-------------------------------+-------------------------------+-------------------------------+") {
+            it.candidatesAsString
+        }
+    }
+
+    private fun printBox(divider: String, getCellContent: (Cell) -> String) {
+
+        out.println(divider)
+
         for (i in puzzle.cells.indices) {
+
+            // Left edge
             if (i % 9 == 0) {
                 out.print("| ")
             }
-            out.print(puzzle.cells[i].text)
 
-            // Block divider
+            // Content
+            out.print(getCellContent(puzzle.cells[i]))
+            out.print(" ")
+
+            // Vertical block divider
             val next = i + 1
             if (next % 3 == 0) {
                 out.print("| ")
@@ -41,46 +76,18 @@ open class Printer @JvmOverloads constructor(private val puzzle: Puzzle, val out
                 out.println()
             }
 
-            // Block line
+            // Horizontal block divider
             if (next % 27 == 0) {
-                out.println("+-------+-------+-------+")
+                out.println(divider)
             }
         }
     }
+}
 
-    open fun printAllCandidates() {
-        out.println("+----------------------------+-----------------------------+-----------------------------+")
-        for (i in puzzle.cells.indices) {
-            if (i % 9 == 0) {
-                out.print("|")
-            }
-            out.print(puzzle.cells[i].candidatesAsString)
-
-            // Block divider
-            val next = i + 1
-            if (next % 3 == 0) {
-                out.print(" | ")
-            }
-
-            // New line
-            if (next % 9 == 0) {
-                out.println()
-            }
-
-            // Block line
-            if (next % 27 == 0) {
-                out.println("+----------------------------+-----------------------------+-----------------------------+")
-            }
-        }
-    }
-
-    fun silentPrinter(): Printer {
-        return object : Printer(Puzzle(false)) {
-            override fun println(message: Any) {}
-            override fun printStart() {}
-            override fun printEnd() {}
-            override fun printPuzzle() {}
-            override fun printAllCandidates() {}
-        }
-    }
+val SILENT_PRINTER = object : Printer {
+    override fun println(message: Any) {}
+    override fun printStart() {}
+    override fun printEnd() {}
+    override fun printPuzzle() {}
+    override fun printAllCandidates() {}
 }

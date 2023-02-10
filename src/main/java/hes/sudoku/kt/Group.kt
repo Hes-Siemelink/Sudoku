@@ -1,7 +1,6 @@
 package hes.sudoku.kt
 
-class Group(
-        private val name: String) {
+class Group(val name: String) {
 
     private val _cells = mutableSetOf<Cell>()
 

@@ -5,8 +5,6 @@ class Puzzle {
     private val _cells: MutableList<Cell> = ArrayList(81)
     private val _groups: MutableList<Group> = ArrayList(27)
 
-    // Derived properties
-
     val cells: List<Cell>
         get() = _cells
     val groups: List<Group>

@@ -1,8 +1,8 @@
 package hes.sudoku.kt
 
-class RecursiveSolver(private val puzzle: Puzzle) {
-
-    private val printer: Printer = Printer(puzzle)
+class RecursiveSolver(
+        private val puzzle: Puzzle,
+        private val printer: Printer = DefaultPrinter(puzzle)) {
 
     fun solve(): Set<Move> {
         val moves = mutableSetOf<Move>()
@@ -30,7 +30,8 @@ class RecursiveSolver(private val puzzle: Puzzle) {
     }
 
     private fun solve(puzzle: Puzzle, candidates: MutableSet<Move>): Boolean {
-        val solver = LogicSolver(puzzle, printer.silentPrinter())
+        val solver = LogicSolver(puzzle, SILENT_PRINTER)
+
         solver.fillNumbers()
 
         if (puzzle.isSolved()) {
@@ -38,7 +39,7 @@ class RecursiveSolver(private val puzzle: Puzzle) {
             return true
         }
 
-        Printer(puzzle).printPuzzle()
+        DefaultPrinter(puzzle).printPuzzle()
         printer.println("Puzzle not solved. Trying recursively.")
 
         return RecursiveSolver(puzzle).solve(candidates)

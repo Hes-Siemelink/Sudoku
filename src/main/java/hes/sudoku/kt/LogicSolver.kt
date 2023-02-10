@@ -1,8 +1,8 @@
 package hes.sudoku.kt
 
-class LogicSolver constructor(
+class LogicSolver(
         val puzzle: Puzzle,
-        val printer: Printer = Printer(puzzle)) {
+        private val printer: Printer = DefaultPrinter(puzzle)) {
 
     fun solve() {
         while (fillNumbers() || eliminateCandidates());

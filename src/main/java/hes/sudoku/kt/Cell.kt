@@ -22,7 +22,7 @@ class Cell {
         get() = "Row ${row + 1} column ${column + 1}"
 
     val text: String
-        get() = if (known) "$number " else ". "
+        get() = if (known) "$number" else "."
 
     val candidatesAsString: String
         get() {
