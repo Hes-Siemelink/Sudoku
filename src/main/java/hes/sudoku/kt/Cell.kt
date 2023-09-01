@@ -81,6 +81,7 @@ class Cell {
 
     fun eliminate(number: Int?) {
         _candidates.remove(number)
-        check(!(!known && _candidates.size == 0)) { "No more candidates for $this after eliminating %$number" }
+
+        check(known || _candidates.size > 0) { "No more candidates for $this after eliminating %$number" }
     }
 }

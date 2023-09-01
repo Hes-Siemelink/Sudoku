@@ -119,13 +119,7 @@ class Puzzle {
     }
 
     fun isSolved(): Boolean {
-        for (cell in _cells) {
-            if (!cell.known) {
-                return false
-            }
-        }
-
-        return true
+        return _cells.all { it.known }
     }
 
     //
