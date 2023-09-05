@@ -9,16 +9,14 @@ class PuzzleTest {
 
     @Test
     fun `create new puzzle`() {
-        val puzzle = Puzzle.from(
-            listOf(
-                listOf(1),
-                emptyList()
-            ),
-            listOf(
-                listOf(1),
-                emptyList()
-            )
-        )
+
+        val puzzle = nonogram {
+            row(1)
+            row()
+
+            column(1)
+            column()
+        }
 
         assertEquals("..", toString(puzzle.rows[0].cells))
         assertEquals("..", toString(puzzle.rows[1].cells))
@@ -36,16 +34,13 @@ class PuzzleTest {
 
     @Test
     fun `solve puzzle`() {
-        val puzzle = Puzzle.from(
-            listOf(
-                listOf(1),
-                emptyList()
-            ),
-            listOf(
-                listOf(1),
-                emptyList()
-            )
-        )
+        val puzzle = nonogram {
+            row(1)
+            row()
+
+            column(1)
+            column()
+        }
 
         val solution = puzzle.solve() ?: throw AssertionFailedError("Puzzle should have a solution")
 

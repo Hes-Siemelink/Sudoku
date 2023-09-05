@@ -49,31 +49,49 @@ class Puzzle(val rows: List<Line>, val columns: List<Line>) {
 
     fun print() {
         rows.forEach {
-            println(toString(it.cells))
+            println(toString(it.cells).replace('.', ' ').replace('-', '·').replace('*', '█'))
         }
     }
+}
 
-    companion object {
-        fun from(rowHints: List<List<Int>>, columnHints: List<List<Int>>): Puzzle {
-
-            val width = columnHints.size
-
-            // Create rows with empty cells
-            val rows = mutableListOf<Line>()
-            for (hint in rowHints) {
-                rows.add(Line(hint, emptyCells(width)))
-            }
-
-            // Recycle cells for columns
-            val columns = mutableListOf<Line>()
-            for ((index, hint) in columnHints.withIndex()) {
-                val column = Line(hint, cellsByIndex(rows, index))
-                columns.add(column)
-            }
-
-            return Puzzle(rows, columns)
-        }
+class NonogramSpec(
+    val rowHints: MutableList<List<Int>> = mutableListOf(),
+    val columnHints: MutableList<List<Int>> = mutableListOf()
+) {
+    fun row(vararg hints: Int) {
+        rowHints.add(hints.asList())
     }
+
+    fun column(vararg hints: Int) {
+        columnHints.add(hints.asList())
+    }
+
+    fun toPuzzle(rowHints: List<List<Int>>, columnHints: List<List<Int>>): Puzzle {
+
+        val width = columnHints.size
+
+        // Create rows with empty cells
+        val rows = mutableListOf<Line>()
+        for (hint in rowHints) {
+            rows.add(Line(hint, emptyCells(width)))
+        }
+
+        // Recycle cells for columns
+        val columns = mutableListOf<Line>()
+        for ((index, hint) in columnHints.withIndex()) {
+            val column = Line(hint, cellsByIndex(rows, index))
+            columns.add(column)
+        }
+
+        return Puzzle(rows, columns)
+    }
+}
+
+fun nonogram(init: NonogramSpec.() -> Unit): Puzzle {
+    val spec = NonogramSpec()
+    spec.init()
+
+    return spec.toPuzzle(spec.rowHints, spec.columnHints)
 }
 
 private fun emptyCells(count: Int): List<Cell> {
