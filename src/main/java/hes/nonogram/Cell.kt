@@ -4,8 +4,8 @@ class Cell(var state: State = State.UNKNOWN) {
 
     constructor(char: Char) : this(State.from(char))
 
-    infix fun and(other: Cell): Boolean {
-        return state == other.state
+    fun copy(): Cell {
+        return Cell(state)
     }
 
     override fun toString(): String {

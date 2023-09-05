@@ -1,5 +1,7 @@
 package hes.nonogram
 
+import hes.nonogram.Cell.State.FILLED
+
 class Puzzle(val rows: List<Line>, val columns: List<Line>) {
 
     fun cell(row: Int, column: Int): Cell {
@@ -11,6 +13,45 @@ class Puzzle(val rows: List<Line>, val columns: List<Line>) {
 
     val solved: Boolean
         get() = rows.all { it.solved } && columns.all { it.solved }
+
+    fun copy(): Puzzle {
+        val rowsCopy = rows.map { it.copy() }
+
+        // Recycle cells for columns
+        val columns = mutableListOf<Line>()
+        for ((index, column) in columns.withIndex()) {
+            val line = Line(column.hints, cellsByIndex(rowsCopy, index))
+            columns.add(line)
+        }
+
+        return Puzzle(rows, columns)
+    }
+
+    fun solve(): Puzzle? {
+
+        if (solved) {
+            return this
+        }
+
+        for (r in rows.indices) {
+            for (c in rows[r].cells.indices) {
+                if (rows[r].cells[c].state == FILLED) continue
+
+                val clone = copy()
+                clone.rows[r].cells[c].state = FILLED
+
+                return clone.solve() ?: continue
+            }
+        }
+
+        return null
+    }
+
+    fun print() {
+        rows.forEach {
+            println(toString(it.cells))
+        }
+    }
 
     companion object {
         fun from(rowHints: List<List<Int>>, columnHints: List<List<Int>>): Puzzle {

@@ -6,6 +6,10 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
 
     constructor(hints: List<Int>, s: String) : this(hints, toCells(s))
 
+    fun copy(): Line {
+        return Line(hints, cells.map { it.copy() })
+    }
+
     val valid: Boolean
         get() {
             for (i in hints.indices) {

@@ -3,6 +3,7 @@ package hes.nonogram
 import hes.nonogram.Cell.State.FILLED
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.opentest4j.AssertionFailedError
 
 class PuzzleTest {
 
@@ -31,5 +32,29 @@ class PuzzleTest {
 
         assertTrue(puzzle.valid, "Puzzle should be in valid state.")
         assertTrue(puzzle.solved, "Puzzle should be solved.")
+    }
+
+    @Test
+    fun `solve puzzle`() {
+        val puzzle = Puzzle.from(
+            listOf(
+                listOf(1),
+                emptyList()
+            ),
+            listOf(
+                listOf(1),
+                emptyList()
+            )
+        )
+
+        val solution = puzzle.solve() ?: throw AssertionFailedError("Puzzle should have a solution")
+
+        solution.print()
+
+        assertTrue(solution.valid, "Puzzle should be in valid state.")
+        assertTrue(solution.solved, "Puzzle should be solved.")
+
+        assertEquals("*.", toString(puzzle.rows[0].cells).replace('-', '.'))
+        assertEquals("..", toString(puzzle.rows[1].cells).replace('-', '.'))
     }
 }
