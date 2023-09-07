@@ -66,11 +66,9 @@ class Puzzle(
 
                 val clone = copy()
                 clone.rows[r].cells[c].state = FILLED
-                clone.columns[c].cells[r].state = FILLED
 
                 if (!clone.valid) {
                     this.rows[r].cells[c].state = EMPTY
-//                    this.columns[c].cells[r].state = EMPTY
                     continue
                 }
 

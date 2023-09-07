@@ -15,8 +15,13 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         get() {
             for (i in hints.indices) {
                 val hint = hints[i]
-                val left = lengthOf(hints.subList(0, i)) + emptyLeft()
+                var left = lengthOf(hints.subList(0, i)) + emptyLeft()
                 val right = lengthOf(hints.subList(i + 1, hints.size)) + emptyRight()
+
+                // Hack to detect cases like .*. with [1, 1]
+                if (left > 0 && cells[left - 1].state == FILLED) {
+                    left += 1
+                }
 
                 if (left > cells.size - right) {
                     return false
@@ -25,15 +30,15 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
                 try {
                     val segment = LineSegment(hint, cells.subList(left, cells.size - right))
 
-                    // Minimal left side should end with empty space
-                    if (left > 0 && cells[left - 1].state == FILLED) {
-                        return false
-                    }
-
-                    // Minimal right side should end with empty space
-                    if (right > 0 && cells[cells.size - right].state == FILLED) {
-                        return false
-                    }
+//                    // Minimal left side should end with empty space
+//                    if (left > 0 && cells[left - 1].state == FILLED) {
+//                        return false
+//                    }
+//
+//                    // Minimal right side should end with empty space
+//                    if (right > 0 && cells[cells.size - right].state == FILLED) {
+//                        return false
+//                    }
 
                     // Check if segment where this hint should lie is valid
                     if (!segment.valid) {

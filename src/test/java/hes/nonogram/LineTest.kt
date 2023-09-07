@@ -61,8 +61,11 @@ class LineTest {
         assertTrue(Line(listOf(1, 1), "*.*").valid)
         assertTrue(Line(listOf(1, 3), "..*.*").valid)
         assertTrue(Line(listOf(1, 1), "-*..").valid)
+        assertTrue(Line(listOf(1, 2), "*-*..").valid)
+        assertTrue(Line(listOf(1, 1, 1), "*-*.*").valid)
 
         assertFalse(Line(listOf(1, 1), ".*.").valid)
+        assertFalse(Line(listOf(1, 1, 1), ".*.*.").valid)
         assertFalse(Line(listOf(1, 1), "---*").valid)
     }
 
