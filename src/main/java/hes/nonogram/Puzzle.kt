@@ -2,7 +2,41 @@ package hes.nonogram
 
 import hes.nonogram.Cell.State.*
 
-class Puzzle(val rows: List<Line>, val columns: List<Line>) {
+class Puzzle(
+    private val rowHints: List<List<Int>>,
+    private val columnHints: List<List<Int>>,
+    private val cells: List<Cell> = mutableListOf()
+) {
+
+    private val width: Int = columnHints.size
+    private val height: Int = rowHints.size
+
+    val rows: List<Line>
+    val columns: List<Line>
+
+    init {
+
+        if (cells.isEmpty() && cells is MutableList) {
+            for (i in 1..width * height) {
+                cells.add(Cell())
+            }
+        }
+
+        rows = rowHints.mapIndexed { index, hints -> Line(hints, row(index)) }
+        columns = columnHints.mapIndexed { index, hints -> Line(hints, column(index)) }
+    }
+
+    private fun row(index: Int): List<Cell> {
+        return cells.subList(index * width, (index + 1) * width)
+    }
+
+    private fun column(index: Int): List<Cell> {
+        val cellColumn = mutableListOf<Cell>()
+        for (row in 0 until height) {
+            cellColumn.add(cells[width * row + index])
+        }
+        return cellColumn
+    }
 
     fun cell(row: Int, column: Int): Cell {
         return rows[row].cells[column]
@@ -15,16 +49,9 @@ class Puzzle(val rows: List<Line>, val columns: List<Line>) {
         get() = rows.all { it.solved } && columns.all { it.solved }
 
     fun copy(): Puzzle {
-        val rowsCopy = rows.map { it.copy() }
+        val cellsCopy = cells.map { it.copy() }
 
-        // Recycle cells for columns
-        val columnsCopy = mutableListOf<Line>()
-        for ((index, column) in columns.withIndex()) {
-            val line = Line(column.hints, cellsByIndex(rows, index))
-            columnsCopy.add(line)
-        }
-
-        return Puzzle(rowsCopy, columnsCopy)
+        return Puzzle(rowHints, columnHints, cellsCopy)
     }
 
     fun solve(): Puzzle? {
@@ -97,24 +124,7 @@ class NonogramSpec(
     }
 
     fun toPuzzle(rowHints: List<List<Int>>, columnHints: List<List<Int>>): Puzzle {
-
-        val width = columnHints.size
-
-        // Create rows with empty cells
-        val rows = mutableListOf<Line>()
-        for (hint in rowHints) {
-            rows.add(Line(hint, emptyCells(width)))
-        }
-
-        // Recycle cells for columns
-        val columns = mutableListOf<Line>()
-        for ((index, hint) in columnHints.withIndex()) {
-            val column = Line(hint, cellsByIndex(rows, index))
-            columns.add(column)
-        }
-
-        val puzzle = Puzzle(rows, columns)
-        return puzzle
+        return Puzzle(rowHints, columnHints)
     }
 }
 
@@ -123,20 +133,4 @@ fun nonogram(init: NonogramSpec.() -> Unit): Puzzle {
     spec.init()
 
     return spec.toPuzzle(spec.rowHints, spec.columnHints)
-}
-
-private fun emptyCells(count: Int): List<Cell> {
-    val cells = mutableListOf<Cell>()
-    for (i in 1..count) {
-        cells.add(Cell())
-    }
-    return cells
-}
-
-private fun cellsByIndex(lines: List<Line>, index: Int): List<Cell> {
-    val cells = mutableListOf<Cell>()
-    for (line in lines) {
-        cells.add(line.cells[index])
-    }
-    return cells
 }
