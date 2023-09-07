@@ -1,6 +1,6 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.State.FILLED
+import hes.nonogram.Cell.State.*
 
 class Puzzle(val rows: List<Line>, val columns: List<Line>) {
 
@@ -18,13 +18,13 @@ class Puzzle(val rows: List<Line>, val columns: List<Line>) {
         val rowsCopy = rows.map { it.copy() }
 
         // Recycle cells for columns
-        val columns = mutableListOf<Line>()
+        val columnsCopy = mutableListOf<Line>()
         for ((index, column) in columns.withIndex()) {
-            val line = Line(column.hints, cellsByIndex(rowsCopy, index))
-            columns.add(line)
+            val line = Line(column.hints, cellsByIndex(rows, index))
+            columnsCopy.add(line)
         }
 
-        return Puzzle(rows, columns)
+        return Puzzle(rowsCopy, columnsCopy)
     }
 
     fun solve(): Puzzle? {
@@ -35,16 +35,46 @@ class Puzzle(val rows: List<Line>, val columns: List<Line>) {
 
         for (r in rows.indices) {
             for (c in rows[r].cells.indices) {
-                if (rows[r].cells[c].state == FILLED) continue
+                if (rows[r].cells[c].state != UNKNOWN) continue
 
                 val clone = copy()
                 clone.rows[r].cells[c].state = FILLED
+                clone.columns[c].cells[r].state = FILLED
 
-                return clone.solve() ?: continue
+                if (!clone.valid) {
+                    this.rows[r].cells[c].state = EMPTY
+//                    this.columns[c].cells[r].state = EMPTY
+                    continue
+                }
+
+                println("Checking with ($r, $c):\n$clone\n")
+
+                val solution = clone.solve()
+                if (solution != null) {
+                    return solution
+                }
+
+                this.rows[r].cells[c].state = EMPTY
             }
         }
 
         return null
+    }
+
+    override fun toString(): String {
+        return buildString {
+            columns.forEach {
+                append(it.hints)
+                append(" ")
+            }
+            append("\n")
+            rows.forEach {
+                append(it.toString())
+                append(" ")
+                append(it.hints)
+                append('\n')
+            }
+        }
     }
 
     fun print() {
@@ -83,7 +113,8 @@ class NonogramSpec(
             columns.add(column)
         }
 
-        return Puzzle(rows, columns)
+        val puzzle = Puzzle(rows, columns)
+        return puzzle
     }
 }
 

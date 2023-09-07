@@ -1,5 +1,6 @@
 package hes.nonogram
 
+import hes.nonogram.Cell.State.EMPTY
 import hes.nonogram.Cell.State.FILLED
 
 class Line(val hints: List<Int>, val cells: List<Cell>) {
@@ -14,27 +15,59 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         get() {
             for (i in hints.indices) {
                 val hint = hints[i]
-                val left = lengthOf(hints.subList(0, i))
-                val right = lengthOf(hints.subList(i + 1, hints.size))
-                val segment = LineSegment(hint, cells.subList(left, cells.size - right))
+                val left = lengthOf(hints.subList(0, i)) + emptyLeft()
+                val right = lengthOf(hints.subList(i + 1, hints.size)) + emptyRight()
 
-                // Minimal left side should end with empty space
-                if (left > 0 && cells[left - 1].state == FILLED) {
+                if (left > cells.size - right) {
                     return false
                 }
 
-                // Minimal right side should end with empty space
-                if (right > 0 && cells[cells.size - right].state == FILLED) {
-                    return false
-                }
+                try {
+                    val segment = LineSegment(hint, cells.subList(left, cells.size - right))
 
-                // Check if segment where this hint should lie is valid
-                if (!segment.valid) {
-                    return false
+                    // Minimal left side should end with empty space
+                    if (left > 0 && cells[left - 1].state == FILLED) {
+                        return false
+                    }
+
+                    // Minimal right side should end with empty space
+                    if (right > 0 && cells[cells.size - right].state == FILLED) {
+                        return false
+                    }
+
+                    // Check if segment where this hint should lie is valid
+                    if (!segment.valid) {
+                        return false
+                    }
+                } catch (e: IllegalArgumentException) {
+                    println("Segment: $this with hints $hints. Left: $left; right: $right")
+                    throw e
                 }
             }
             return true
         }
+
+    private fun emptyLeft(): Int {
+        var total = 0
+        for (cell in cells) {
+            if (cell.state != EMPTY) {
+                return total
+            }
+            total++
+        }
+        return total
+    }
+
+    private fun emptyRight(): Int {
+        var total = 0
+        for (cell in cells.reversed()) {
+            if (cell.state != EMPTY) {
+                return total
+            }
+            total++
+        }
+        return total
+    }
 
     val solved: Boolean
         get() {
@@ -56,6 +89,10 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
 
             return counted == hints
         }
+
+    override fun toString(): String {
+        return toString(cells)
+    }
 }
 
 fun lengthOf(hints: List<Int>): Int {
@@ -120,6 +157,6 @@ class LineSegment(val hint: Int, val cells: List<Cell>) {
     }
 
     override fun toString(): String {
-        return "${hes.nonogram.toString(cells)} ($hint)"
+        return "${toString(cells)} ($hint)"
     }
 }

@@ -1,5 +1,6 @@
 package hes.nonogram
 
+import hes.nonogram.Cell.State.FILLED
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -12,7 +13,7 @@ class LineTest {
         assertEquals(3, cells.size)
         assertEquals(Cell.State.UNKNOWN, cells[0].state)
         assertEquals(Cell.State.EMPTY, cells[1].state)
-        assertEquals(Cell.State.FILLED, cells[2].state)
+        assertEquals(FILLED, cells[2].state)
 
         assertEquals(".-*", toString(cells))
     }
@@ -37,11 +38,11 @@ class LineTest {
         assertTrue(LineSegment(2, "*.").valid)
         assertTrue(LineSegment(2, ".*").valid)
         assertTrue(LineSegment(2, "--*..").valid)
-        assertTrue(LineSegment(1, "**").valid)
+        assertTrue(LineSegment(2, "**").valid)
 
         assertFalse(LineSegment(2, "*-").valid)
         assertFalse(LineSegment(2, "-*").valid)
-        assertFalse(LineSegment(1, "--").valid)
+        assertFalse(LineSegment(2, "--").valid)
     }
 
     @Test
@@ -49,6 +50,9 @@ class LineTest {
         assertTrue(Line(listOf(1), ".").valid)
         assertTrue(Line(listOf(1), "..").valid)
         assertTrue(Line(listOf(2), "*.").valid)
+        assertTrue(Line(listOf(3), "-***").valid)
+        assertTrue(Line(listOf(3), "***--").valid)
+        assertTrue(Line(listOf(3), "-*...").valid)
     }
 
     @Test
@@ -56,8 +60,10 @@ class LineTest {
         assertTrue(Line(listOf(1, 1), "...").valid)
         assertTrue(Line(listOf(1, 1), "*.*").valid)
         assertTrue(Line(listOf(1, 3), "..*.*").valid)
+        assertTrue(Line(listOf(1, 1), "-*..").valid)
 
         assertFalse(Line(listOf(1, 1), ".*.").valid)
+        assertFalse(Line(listOf(1, 1), "---*").valid)
     }
 
     @Test
@@ -84,5 +90,16 @@ class LineTest {
 
         assertFalse(Line(listOf(1, 2), "*-.*.").solved)
         assertFalse(Line(listOf(1, 2), "*-***").solved)
+    }
+
+    @Test
+    fun `copy`() {
+        val line = Line(listOf(1), "...")
+
+        val copy = line.copy()
+        copy.cells[0].state = FILLED
+
+        assertEquals("*..", toString(copy.cells))
+        assertEquals("...", toString(line.cells))
     }
 }
