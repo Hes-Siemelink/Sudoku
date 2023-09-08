@@ -71,7 +71,7 @@ class PuzzleTest {
     }
 
     @Test
-    fun `solve another puzzle`() {
+    fun `solve 5x5 puzzle`() {
         val puzzle = nonogram {
             row(3)
             row(1, 1, 1)
@@ -88,13 +88,59 @@ class PuzzleTest {
 
         val solution = puzzle.solve() ?: throw AssertionFailedError("Puzzle should have a solution")
 
-        println(solution)
+        solution.print()
 
         assertTrue(solution.valid, "Puzzle should be in valid state.")
         assertTrue(solution.solved, "Puzzle should be solved.")
+    }
 
-//        assertEquals("*.", toString(puzzle.rows[0].cells).replace('-', '.'))
-//        assertEquals("..", toString(puzzle.rows[1].cells).replace('-', '.'))
+    @Test
+//    @Disabled
+    fun `solve 15x15 puzzle`() {
+        val puzzle = nonogram {
+            row(2, 1)
+            row(2, 2)
+            row(4)
+            row(3)
+            row(5)
+
+            row(7, 2)
+            row(2, 8, 1)
+            row(4, 3, 1)
+            row(3, 2, 1)
+            row(3, 1)
+
+            row(3, 1)
+            row(4)
+            row(3, 1)
+            row(3, 3)
+            row(2, 4)
+
+            column(2)
+            column(3)
+            column(3)
+            column(5)
+            column(2, 3)
+
+            column(2, 3)
+            column(1, 2, 3)
+            column(1, 10)
+            column(1, 5, 2)
+            column(7)
+
+            column(5)
+            column(4, 1)
+            column(3, 2, 2)
+            column(1, 3)
+            column(3, 2)
+        }
+
+        val solution = puzzle.solve() ?: throw AssertionFailedError("Puzzle should have a solution")
+
+        solution.print()
+
+        assertTrue(solution.valid, "Puzzle should be in valid state.")
+        assertTrue(solution.solved, "Puzzle should be solved.")
     }
 
     // Another one to try:

@@ -11,8 +11,16 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         return Line(hints, cells.map { it.copy() })
     }
 
+    fun filled(): Int {
+        return cells.count { it.state == FILLED }
+    }
+
     val valid: Boolean
         get() {
+            if (filled() > hints.sumOf { it }) {
+                return false
+            }
+
             for (i in hints.indices) {
                 val hint = hints[i]
                 var left = lengthOf(hints.subList(0, i)) + emptyLeft()
@@ -29,16 +37,6 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
 
                 try {
                     val segment = LineSegment(hint, cells.subList(left, cells.size - right))
-
-//                    // Minimal left side should end with empty space
-//                    if (left > 0 && cells[left - 1].state == FILLED) {
-//                        return false
-//                    }
-//
-//                    // Minimal right side should end with empty space
-//                    if (right > 0 && cells[cells.size - right].state == FILLED) {
-//                        return false
-//                    }
 
                     // Check if segment where this hint should lie is valid
                     if (!segment.valid) {
@@ -122,44 +120,37 @@ class LineSegment(val hint: Int, val cells: List<Cell>) {
             return false
         }
 
-    @Deprecated("Not needed")
-    val solved: Boolean
-        get() {
-            for (i in 0..cells.size - hint) {
-                if (isSolvedAt(i)) {
-                    return true
-                }
+    private fun isValidAt(position: Int): Boolean {
+        for (i in position until position + hint) {
+            if (!cells[i].state.couldBeFilled) {
+                return false
             }
+        }
+
+        if (position > 0 && cells[position - 1].state == FILLED) {
             return false
         }
 
-    private fun isValidAt(position: Int): Boolean {
-        for (i in cells.indices) {
-            if (i >= position && i < position + hint) {
-                if (!cells[i].state.couldBeFilled) {
-                    return false
-                }
-            } else {
-                if (cells[i].state == FILLED)
-                    return false
-            }
+        // ..* position 1 hint 1
+        if (position + hint < cells.size && cells[position + hint].state == FILLED) {
+            return false
         }
-        return true
-    }
 
-    private fun isSolvedAt(position: Int): Boolean {
-        for (i in cells.indices) {
-            if (i >= position && i < position + hint) {
-                if (cells[i].state != FILLED)
-                    return false
-            } else {
-                if (cells[i].state == FILLED) {
-                    return false
-                }
-            }
-        }
         return true
     }
+//    private fun isValidAt(position: Int): Boolean {
+//        for (i in cells.indices) {
+//            if (i >= position && i < position + hint) {
+//                if (!cells[i].state.couldBeFilled) {
+//                    return false
+//                }
+//            } else {
+//                if (cells[i].state == FILLED)
+//                    return false
+//            }
+//        }
+//        return true
+//    }
 
     override fun toString(): String {
         return "${toString(cells)} ($hint)"

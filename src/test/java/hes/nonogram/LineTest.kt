@@ -63,10 +63,15 @@ class LineTest {
         assertTrue(Line(listOf(1, 1), "-*..").valid)
         assertTrue(Line(listOf(1, 2), "*-*..").valid)
         assertTrue(Line(listOf(1, 1, 1), "*-*.*").valid)
+        assertTrue(Line(listOf(4, 1), "..****..").valid)
+        assertTrue(Line(listOf(1, 4), "..****..").valid)
+        assertTrue(Line(listOf(1, 1), "*-*..").valid)
 
         assertFalse(Line(listOf(1, 1), ".*.").valid)
         assertFalse(Line(listOf(1, 1, 1), ".*.*.").valid)
         assertFalse(Line(listOf(1, 1), "---*").valid)
+        assertFalse(Line(listOf(2, 1), ".***..").valid)
+        assertFalse(Line(listOf(2, 2), "****").valid)
     }
 
     @Test
@@ -74,16 +79,6 @@ class LineTest {
         assertTrue(Line(listOf(1, 1, 1), ".....").valid)
 
         assertFalse(Line(listOf(2, 2, 2), "**....-.").valid)
-    }
-
-    @Test
-    fun `segment solved`() {
-        assertTrue(LineSegment(1, "*").solved)
-        assertTrue(LineSegment(1, ".*.").solved)
-        assertTrue(LineSegment(1, "-*-").solved)
-
-        assertFalse(LineSegment(2, "***.").solved)
-        assertFalse(LineSegment(2, "--*.").solved)
     }
 
     @Test
