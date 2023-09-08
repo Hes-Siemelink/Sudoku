@@ -1,6 +1,6 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.State.FILLED
+import hes.nonogram.State.FILLED
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -44,13 +44,13 @@ class PuzzleImplementationTest {
 
         val puzzle = simplePuzzle()
 
-        assertTrue(puzzle.valid, "Puzzle should be in valid state.")
-        assertFalse(puzzle.solved, "Puzzle should not be solved.")
+        assertTrue(puzzle.isValid(), "Puzzle should be in valid state.")
+        assertFalse(puzzle.isSolved(), "Puzzle should not be solved.")
 
         puzzle.cell(0, 0).state = FILLED
 
-        assertTrue(puzzle.valid, "Puzzle should be in valid state.")
-        assertTrue(puzzle.solved, "Puzzle should be solved.")
+        assertTrue(puzzle.isValid(), "Puzzle should be in valid state.")
+        assertTrue(puzzle.isSolved(), "Puzzle should be solved.")
     }
 
 

@@ -1,6 +1,6 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.State.*
+import hes.nonogram.State.*
 
 class Line(val hints: List<Int>, val cells: List<Cell>) {
 
@@ -10,47 +10,46 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         return Line(hints, cells.map { it.copy() })
     }
 
-    fun filled(): Int {
+    private fun filled(): Int {
         return cells.count { it.state == FILLED }
     }
 
-    val valid: Boolean
-        get() {
-            if (filled() > hints.sumOf { it }) {
+    fun isValid(): Boolean {
+        if (filled() > hints.sumOf { it }) {
+            return false
+        }
+        if (!knownHintsOK()) {
+            return false
+        }
+
+        for (i in hints.indices) {
+            val hint = hints[i]
+            var left = lengthOf(hints.subList(0, i)) + emptyLeft()
+            val right = lengthOf(hints.subList(i + 1, hints.size)) + emptyRight()
+
+            // Hack to detect cases like .*. with [1, 1]
+            if (left > 0 && cells[left - 1].state == FILLED) {
+                left += 1
+            }
+
+            if (left > cells.size - right) {
                 return false
             }
-            if (!knownHintsOK()) {
-                return false
-            }
 
-            for (i in hints.indices) {
-                val hint = hints[i]
-                var left = lengthOf(hints.subList(0, i)) + emptyLeft()
-                val right = lengthOf(hints.subList(i + 1, hints.size)) + emptyRight()
+            try {
+                val segment = LineSegment(hint, cells.subList(left, cells.size - right))
 
-                // Hack to detect cases like .*. with [1, 1]
-                if (left > 0 && cells[left - 1].state == FILLED) {
-                    left += 1
-                }
-
-                if (left > cells.size - right) {
+                // Check if segment where this hint should lie is valid
+                if (!segment.isValid()) {
                     return false
                 }
-
-                try {
-                    val segment = LineSegment(hint, cells.subList(left, cells.size - right))
-
-                    // Check if segment where this hint should lie is valid
-                    if (!segment.valid) {
-                        return false
-                    }
-                } catch (e: IllegalArgumentException) {
-                    println("Segment: $this with hints $hints. Left: $left; right: $right")
-                    throw e
-                }
+            } catch (e: IllegalArgumentException) {
+                println("Segment: $this with hints $hints. Left: $left; right: $right")
+                throw e
             }
-            return true
         }
+        return true
+    }
 
     private fun knownHintsOK(): Boolean {
 
@@ -106,26 +105,25 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         return total
     }
 
-    val solved: Boolean
-        get() {
-            val counted = mutableListOf<Int>()
-            var count = 0
-            for (cell in cells) {
-                if (cell.state == FILLED) {
-                    count++
-                } else {
-                    if (count > 0) {
-                        counted.add(count)
-                    }
-                    count = 0
+    fun isSolved(): Boolean {
+        val counted = mutableListOf<Int>()
+        var count = 0
+        for (cell in cells) {
+            if (cell.state == FILLED) {
+                count++
+            } else {
+                if (count > 0) {
+                    counted.add(count)
                 }
+                count = 0
             }
-            if (count > 0) {
-                counted.add(count)
-            }
-
-            return counted == hints
         }
+        if (count > 0) {
+            counted.add(count)
+        }
+
+        return counted == hints
+    }
 
     override fun toString(): String {
         return toString(cells)
@@ -144,19 +142,18 @@ class LineSegment(val hint: Int, val cells: List<Cell>) {
 
     constructor(hint: Int, s: String) : this(hint, toCells(s))
 
-    val valid: Boolean
-        get() {
-            for (i in 0..cells.size - hint) {
-                if (isValidAt(i)) {
-                    return true
-                }
+    fun isValid(): Boolean {
+        for (i in 0..cells.size - hint) {
+            if (isValidAt(i)) {
+                return true
             }
-            return false
         }
+        return false
+    }
 
     private fun isValidAt(position: Int): Boolean {
         for (i in position until position + hint) {
-            if (!cells[i].state.couldBeFilled) {
+            if (cells[i].state == EMPTY) {
                 return false
             }
         }
@@ -172,19 +169,6 @@ class LineSegment(val hint: Int, val cells: List<Cell>) {
 
         return true
     }
-//    private fun isValidAt(position: Int): Boolean {
-//        for (i in cells.indices) {
-//            if (i >= position && i < position + hint) {
-//                if (!cells[i].state.couldBeFilled) {
-//                    return false
-//                }
-//            } else {
-//                if (cells[i].state == FILLED)
-//                    return false
-//            }
-//        }
-//        return true
-//    }
 
     override fun toString(): String {
         return "${toString(cells)} ($hint)"

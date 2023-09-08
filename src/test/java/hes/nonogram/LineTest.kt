@@ -1,6 +1,6 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.State.FILLED
+import hes.nonogram.State.FILLED
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -11,8 +11,8 @@ class LineTest {
         val cells = toCells(".-*")
 
         assertEquals(3, cells.size)
-        assertEquals(Cell.State.UNKNOWN, cells[0].state)
-        assertEquals(Cell.State.EMPTY, cells[1].state)
+        assertEquals(State.UNKNOWN, cells[0].state)
+        assertEquals(State.EMPTY, cells[1].state)
         assertEquals(FILLED, cells[2].state)
 
         assertEquals(".-*", toString(cells))
@@ -20,74 +20,74 @@ class LineTest {
 
     @Test
     fun `segment validation with hint of size 1`() {
-        assertTrue(LineSegment(1, ".").valid)
-        assertTrue(LineSegment(1, "..").valid)
-        assertTrue(LineSegment(1, "*.").valid)
-        assertTrue(LineSegment(1, ".*").valid)
-        assertTrue(LineSegment(1, "*-").valid)
-        assertTrue(LineSegment(1, "-*").valid)
-        assertTrue(LineSegment(1, "--*..").valid)
+        assertTrue(LineSegment(1, ".").isValid())
+        assertTrue(LineSegment(1, "..").isValid())
+        assertTrue(LineSegment(1, "*.").isValid())
+        assertTrue(LineSegment(1, ".*").isValid())
+        assertTrue(LineSegment(1, "*-").isValid())
+        assertTrue(LineSegment(1, "-*").isValid())
+        assertTrue(LineSegment(1, "--*..").isValid())
 
-        assertFalse(LineSegment(1, "**").valid)
-        assertFalse(LineSegment(1, "--").valid)
+        assertFalse(LineSegment(1, "**").isValid())
+        assertFalse(LineSegment(1, "--").isValid())
     }
 
     @Test
     fun `segment validation with hint of size 2`() {
-        assertTrue(LineSegment(2, "..").valid)
-        assertTrue(LineSegment(2, "*.").valid)
-        assertTrue(LineSegment(2, ".*").valid)
-        assertTrue(LineSegment(2, "--*..").valid)
-        assertTrue(LineSegment(2, "**").valid)
+        assertTrue(LineSegment(2, "..").isValid())
+        assertTrue(LineSegment(2, "*.").isValid())
+        assertTrue(LineSegment(2, ".*").isValid())
+        assertTrue(LineSegment(2, "--*..").isValid())
+        assertTrue(LineSegment(2, "**").isValid())
 
-        assertFalse(LineSegment(2, "*-").valid)
-        assertFalse(LineSegment(2, "-*").valid)
-        assertFalse(LineSegment(2, "--").valid)
+        assertFalse(LineSegment(2, "*-").isValid())
+        assertFalse(LineSegment(2, "-*").isValid())
+        assertFalse(LineSegment(2, "--").isValid())
     }
 
     @Test
     fun `line validation for 1 hint`() {
-        assertTrue(Line(listOf(1), ".").valid)
-        assertTrue(Line(listOf(1), "..").valid)
-        assertTrue(Line(listOf(2), "*.").valid)
-        assertTrue(Line(listOf(3), "-***").valid)
-        assertTrue(Line(listOf(3), "***--").valid)
-        assertTrue(Line(listOf(3), "-*...").valid)
+        assertTrue(Line(listOf(1), ".").isValid())
+        assertTrue(Line(listOf(1), "..").isValid())
+        assertTrue(Line(listOf(2), "*.").isValid())
+        assertTrue(Line(listOf(3), "-***").isValid())
+        assertTrue(Line(listOf(3), "***--").isValid())
+        assertTrue(Line(listOf(3), "-*...").isValid())
     }
 
     @Test
     fun `line validation for 2 hints`() {
-        assertTrue(Line(listOf(1, 1), "...").valid)
-        assertTrue(Line(listOf(1, 1), "*.*").valid)
-        assertTrue(Line(listOf(1, 3), "..*.*").valid)
-        assertTrue(Line(listOf(1, 1), "-*..").valid)
-        assertTrue(Line(listOf(1, 2), "*-*..").valid)
-        assertTrue(Line(listOf(1, 1, 1), "*-*.*").valid)
-        assertTrue(Line(listOf(4, 1), "..****..").valid)
-        assertTrue(Line(listOf(1, 4), "..****..").valid)
-        assertTrue(Line(listOf(1, 1), "*-*..").valid)
+        assertTrue(Line(listOf(1, 1), "...").isValid())
+        assertTrue(Line(listOf(1, 1), "*.*").isValid())
+        assertTrue(Line(listOf(1, 3), "..*.*").isValid())
+        assertTrue(Line(listOf(1, 1), "-*..").isValid())
+        assertTrue(Line(listOf(1, 2), "*-*..").isValid())
+        assertTrue(Line(listOf(1, 1, 1), "*-*.*").isValid())
+        assertTrue(Line(listOf(4, 1), "..****..").isValid())
+        assertTrue(Line(listOf(1, 4), "..****..").isValid())
+        assertTrue(Line(listOf(1, 1), "*-*..").isValid())
 
-        assertFalse(Line(listOf(1, 1), ".*.").valid)
-        assertFalse(Line(listOf(1, 1, 1), ".*.*.").valid)
-        assertFalse(Line(listOf(1, 1), "---*").valid)
-        assertFalse(Line(listOf(2, 1), ".***..").valid)
-        assertFalse(Line(listOf(2, 2), "****").valid)
+        assertFalse(Line(listOf(1, 1), ".*.").isValid())
+        assertFalse(Line(listOf(1, 1, 1), ".*.*.").isValid())
+        assertFalse(Line(listOf(1, 1), "---*").isValid())
+        assertFalse(Line(listOf(2, 1), ".***..").isValid())
+        assertFalse(Line(listOf(2, 2), "****").isValid())
     }
 
     @Test
     fun `line validation for 3 hints`() {
-        assertTrue(Line(listOf(1, 1, 1), ".....").valid)
+        assertTrue(Line(listOf(1, 1, 1), ".....").isValid())
 
-        assertFalse(Line(listOf(2, 2, 2), "**....-.").valid)
+        assertFalse(Line(listOf(2, 2, 2), "**....-.").isValid())
     }
 
     @Test
     fun `line solved`() {
-        assertTrue(Line(listOf(1), "*").solved)
-        assertTrue(Line(listOf(1, 2), "*-**.").solved)
+        assertTrue(Line(listOf(1), "*").isSolved())
+        assertTrue(Line(listOf(1, 2), "*-**.").isSolved())
 
-        assertFalse(Line(listOf(1, 2), "*-.*.").solved)
-        assertFalse(Line(listOf(1, 2), "*-***").solved)
+        assertFalse(Line(listOf(1, 2), "*-.*.").isSolved())
+        assertFalse(Line(listOf(1, 2), "*-***").isSolved())
     }
 
     @Test

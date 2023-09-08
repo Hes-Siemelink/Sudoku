@@ -21,8 +21,8 @@ class PuzzleTest {
 
         solution.print()
 
-        assertTrue(solution.valid, "Puzzle should be in valid state.")
-        assertTrue(solution.solved, "Puzzle should be solved.")
+        assertTrue(solution.isValid(), "Puzzle should be in valid state.")
+        assertTrue(solution.isSolved(), "Puzzle should be solved.")
 
         assertEquals("*.", toString(solution.rows[0].cells).replace('-', '.'))
         assertEquals("..", toString(solution.rows[1].cells).replace('-', '.'))
@@ -44,8 +44,8 @@ class PuzzleTest {
 
         solution.print()
 
-        assertTrue(solution.valid, "Puzzle should be in valid state.")
-        assertTrue(solution.solved, "Puzzle should be solved.")
+        assertTrue(solution.isValid(), "Puzzle should be in valid state.")
+        assertTrue(solution.isSolved(), "Puzzle should be solved.")
     }
 
     @Test
@@ -66,8 +66,8 @@ class PuzzleTest {
 
         solution.print()
 
-        assertTrue(solution.valid, "Puzzle should be in valid state.")
-        assertTrue(solution.solved, "Puzzle should be solved.")
+        assertTrue(solution.isValid(), "Puzzle should be in valid state.")
+        assertTrue(solution.isSolved(), "Puzzle should be solved.")
     }
 
     @Test
@@ -90,8 +90,8 @@ class PuzzleTest {
 
         solution.print()
 
-        assertTrue(solution.valid, "Puzzle should be in valid state.")
-        assertTrue(solution.solved, "Puzzle should be solved.")
+        assertTrue(solution.isValid(), "Puzzle should be in valid state.")
+        assertTrue(solution.isSolved(), "Puzzle should be solved.")
     }
 
     @Test
@@ -138,8 +138,8 @@ class PuzzleTest {
 
         solution.print()
 
-        assertTrue(solution.valid, "Puzzle should be in valid state.")
-        assertTrue(solution.solved, "Puzzle should be solved.")
+        assertTrue(solution.isValid(), "Puzzle should be in valid state.")
+        assertTrue(solution.isSolved(), "Puzzle should be solved.")
     }
 
     @Test
@@ -186,8 +186,8 @@ class PuzzleTest {
 
         solution.print()
 
-        assertTrue(solution.valid, "Puzzle should be in valid state.")
-        assertTrue(solution.solved, "Puzzle should be solved.")
+        assertTrue(solution.isValid(), "Puzzle should be in valid state.")
+        assertTrue(solution.isSolved(), "Puzzle should be solved.")
     }
 
     // Another one to try:

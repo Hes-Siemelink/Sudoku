@@ -1,6 +1,6 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.State.*
+import hes.nonogram.State.*
 
 class Puzzle(
     private val rowHints: List<List<Int>>,
@@ -42,11 +42,9 @@ class Puzzle(
         return rows[row].cells[column]
     }
 
-    val valid: Boolean
-        get() = rows.all { it.valid } && columns.all { it.valid }
+    fun isValid(): Boolean = rows.all { it.isValid() } && columns.all { it.isValid() }
 
-    val solved: Boolean
-        get() = rows.all { it.solved } && columns.all { it.solved }
+    fun isSolved(): Boolean = rows.all { it.isSolved() } && columns.all { it.isSolved() }
 
     fun copy(): Puzzle {
         val cellsCopy = cells.map { it.copy() }
@@ -56,7 +54,7 @@ class Puzzle(
 
     fun solve(): Puzzle? {
 
-        if (solved) {
+        if (isSolved()) {
             return this
         }
 
@@ -67,7 +65,7 @@ class Puzzle(
                 val clone = copy()
                 clone.rows[r].cells[c].state = FILLED
 
-                if (!clone.valid) {
+                if (!clone.isValid()) {
                     this.rows[r].cells[c].state = EMPTY
                     continue
                 }
