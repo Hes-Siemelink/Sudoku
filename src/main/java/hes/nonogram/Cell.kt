@@ -30,6 +30,12 @@ enum class State(private val value: Char) {
             }
             throw IllegalArgumentException("The character '$char' does not have a state.")
         }
+
+        fun toString(states: List<State>): String {
+            return buildString {
+                states.forEach { append(it.toString()) }
+            }
+        }
     }
 }
 
@@ -46,3 +52,4 @@ fun toString(cells: List<Cell>): String {
         cells.forEach { append(it.toString()) }
     }
 }
+

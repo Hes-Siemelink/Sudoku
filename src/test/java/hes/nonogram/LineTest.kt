@@ -100,4 +100,45 @@ class LineTest {
         assertEquals("*..", toString(copy.cells))
         assertEquals("...", toString(line.cells))
     }
+
+    @Test
+    fun `generate possibilities for (1) length 5`() {
+        val result = allPossibilities(listOf(1), 5).map { State.toString(it) }
+
+        result.forEach {
+            println(it)
+        }
+
+        assertIterableEquals(
+            listOf(
+                "*----",
+                "-*---",
+                "--*--",
+                "---*-",
+                "----*"
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `generate possibilities for (1,1) length 5`() {
+        val result = allPossibilities(listOf(1, 1), 5).map { State.toString(it) }
+
+        result.forEach {
+            println(it)
+        }
+
+        assertIterableEquals(
+            listOf(
+                "*-*--",
+                "*--*-",
+                "*---*",
+                "-*-*-",
+                "-*--*",
+                "--*-*"
+            ),
+            result
+        )
+    }
 }

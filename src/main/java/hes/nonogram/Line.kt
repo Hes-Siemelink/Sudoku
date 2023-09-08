@@ -6,13 +6,17 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
 
     constructor(hints: List<Int>, s: String) : this(hints, toCells(s))
 
+    override fun toString(): String {
+        return toString(cells)
+    }
+
     fun copy(): Line {
         return Line(hints, cells.map { it.copy() })
     }
 
-    private fun filled(): Int {
-        return cells.count { it.state == FILLED }
-    }
+    //
+    // Validation
+    //
 
     fun isValid(): Boolean {
         if (filled() > hints.sumOf { it }) {
@@ -49,6 +53,10 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
             }
         }
         return true
+    }
+
+    private fun filled(): Int {
+        return cells.count { it.state == FILLED }
     }
 
     private fun knownHintsOK(): Boolean {
@@ -105,6 +113,10 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         return total
     }
 
+    //
+    // Solve check
+    //
+
     fun isSolved(): Boolean {
         val counted = mutableListOf<Int>()
         var count = 0
@@ -125,8 +137,47 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
         return counted == hints
     }
 
-    override fun toString(): String {
-        return toString(cells)
+    //
+    // Logical fill
+    //
+
+}
+
+fun allPossibilities(hints: List<Int>, size: Int): List<List<State>> {
+
+    val (hint, tail) = head(hints)
+
+    if (hint == null) {
+        return listOf(states(EMPTY, size))
+    }
+
+    val all = mutableListOf<List<State>>()
+    for (i in 0..size - hint) {
+        val begin = states(EMPTY, i) + states(FILLED, hint)
+
+        if (tail.isEmpty()) {
+            all.add(begin + states(EMPTY, size - begin.size))
+        } else {
+            val beginPlus = begin + listOf(EMPTY)
+            val rest = allPossibilities(tail, size - beginPlus.size)
+            rest.forEach {
+                all.add(beginPlus + it)
+            }
+        }
+    }
+
+    return all
+}
+
+fun states(state: State, length: Int): List<State> {
+    return (1..length).map { state }
+}
+
+fun <T> head(list: List<T>): Pair<T?, List<T>> {
+    return if (list.isEmpty()) {
+        Pair(null, list)
+    } else {
+        Pair(list[0], list.subList(1, list.size))
     }
 }
 
