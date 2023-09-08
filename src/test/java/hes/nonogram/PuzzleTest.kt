@@ -95,7 +95,54 @@ class PuzzleTest {
     }
 
     @Test
-//    @Disabled
+    fun `solve 20x10 puzzle`() {
+        val puzzle = nonogram {
+            row(3, 3, 2)
+            row(5, 3, 2)
+            row(2, 2, 2, 2)
+            row(2, 2, 2, 2)
+            row(3, 2, 2, 1, 2)
+
+            row(7, 3, 3, 3)
+            row(7, 10)
+            row(3, 3, 9)
+            row(2, 2, 3, 3)
+            row(2, 3, 2, 1)
+
+            column(3)
+            column(6)
+            column(7)
+            column(7)
+            column(2, 2)
+
+            column(3, 2)
+            column(7)
+            column(1, 7)
+            column(2, 3)
+            column(6, 1)
+
+            column(7)
+            column(5)
+            column(4)
+            column(4)
+            column(4)
+
+            column(4)
+            column(4)
+            column(4)
+            column(8)
+            column(7)
+        }
+
+        val solution = puzzle.solve() ?: throw AssertionFailedError("Puzzle should have a solution")
+
+        solution.print()
+
+        assertTrue(solution.valid, "Puzzle should be in valid state.")
+        assertTrue(solution.solved, "Puzzle should be solved.")
+    }
+
+    @Test
     fun `solve 15x15 puzzle`() {
         val puzzle = nonogram {
             row(2, 1)

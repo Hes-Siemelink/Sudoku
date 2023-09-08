@@ -1,7 +1,6 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.State.EMPTY
-import hes.nonogram.Cell.State.FILLED
+import hes.nonogram.Cell.State.*
 
 class Line(val hints: List<Int>, val cells: List<Cell>) {
 
@@ -18,6 +17,9 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
     val valid: Boolean
         get() {
             if (filled() > hints.sumOf { it }) {
+                return false
+            }
+            if (!knownHintsOK()) {
                 return false
             }
 
@@ -49,6 +51,38 @@ class Line(val hints: List<Int>, val cells: List<Cell>) {
             }
             return true
         }
+
+    private fun knownHintsOK(): Boolean {
+
+        val filled = splitFilled()
+        if (filled.size <= hints.size) {
+            return (filled == hints.subList(0, filled.size))
+        }
+        return false
+    }
+
+    private fun splitFilled(): List<Int> {
+        val filled = mutableListOf<Int>()
+        var count = 0
+        for (cell in cells) {
+            if (cell.state == EMPTY) {
+                if (count > 0) {
+                    filled.add(count)
+                }
+                count = 0
+            }
+            if (cell.state == FILLED) {
+                count++
+            }
+            if (cell.state == UNKNOWN) {
+                return filled
+            }
+        }
+        if (count > 0) {
+            filled.add(count)
+        }
+        return filled
+    }
 
     private fun emptyLeft(): Int {
         var total = 0

@@ -94,7 +94,10 @@ class Puzzle(
             }
             append("\n")
             rows.forEach {
-                append(it.toString())
+                for (char in it.toString().toCharArray()) {
+                    append(char)
+                    append(' ')
+                }
                 append(" ")
                 append(it.hints)
                 append('\n')
