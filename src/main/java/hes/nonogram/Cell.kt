@@ -13,8 +13,7 @@ class Cell(var state: State = State.UNKNOWN) {
     }
 
     companion object {
-
-        fun fromString(s: String): MutableList<Cell> {
+        fun from(s: String): List<Cell> {
             val cells = mutableListOf<Cell>()
             for (char: Char in s) {
                 if (char.isWhitespace()) {
@@ -23,12 +22,6 @@ class Cell(var state: State = State.UNKNOWN) {
                 cells.add(Cell(char))
             }
             return cells
-        }
-
-        fun toString(cells: List<Cell>): String {
-            return buildString {
-                cells.forEach { append(it) }
-            }
         }
     }
 }
@@ -50,13 +43,12 @@ enum class State(private val value: Char) {
             }
             throw IllegalArgumentException("The character '$char' does not have a state.")
         }
-
-        fun toString(states: List<State>): String {
-            return buildString {
-                states.forEach { append(it.toString()) }
-            }
-        }
     }
 }
 
+fun List<Any>.asString(): String {
+    return buildString {
+        this@asString.forEach { append(it) }
+    }
+}
 

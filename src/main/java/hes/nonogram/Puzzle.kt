@@ -105,7 +105,7 @@ class Puzzle(
 
     fun print() {
         rows.forEach {
-            println(Cell.toString(it.cells).replace('.', ' ').replace('-', '·').replace('*', '█'))
+            println(it.cells.asString().replace('.', ' ').replace('-', '·').replace('*', '█'))
         }
     }
 }

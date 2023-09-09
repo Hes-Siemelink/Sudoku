@@ -1,14 +1,14 @@
 package hes.nonogram
 
-import hes.nonogram.Cell.Companion.fromString
+import hes.nonogram.Cell.Companion.from
 import hes.nonogram.State.*
 
 class Line(val hints: List<Int>, val cells: List<Cell>) {
 
-    constructor(hints: List<Int>, s: String) : this(hints, fromString(s))
+    constructor(hints: List<Int>, s: String) : this(hints, from(s))
 
     override fun toString(): String {
-        return Cell.toString(cells)
+        return cells.asString()
     }
 
     fun copy(): Line {
@@ -192,7 +192,7 @@ fun lengthOf(hints: List<Int>): Int {
 
 class LineSegment(val hint: Int, val cells: List<Cell>) {
 
-    constructor(hint: Int, s: String) : this(hint, fromString(s))
+    constructor(hint: Int, s: String) : this(hint, from(s))
 
     fun isValid(): Boolean {
         for (i in 0..cells.size - hint) {
@@ -223,6 +223,6 @@ class LineSegment(val hint: Int, val cells: List<Cell>) {
     }
 
     override fun toString(): String {
-        return "${Cell.toString(cells)} ($hint)"
+        return "${cells.asString()} ($hint)"
     }
 }

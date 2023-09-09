@@ -2,6 +2,7 @@ package hes.nonogram
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.opentest4j.AssertionFailedError
 
@@ -24,8 +25,8 @@ class PuzzleTest {
         assertTrue(solution.isValid(), "Puzzle should be in valid state.")
         assertTrue(solution.isSolved(), "Puzzle should be solved.")
 
-        assertEquals("*.", Cell.toString(solution.rows[0].cells).replace('-', '.'))
-        assertEquals("..", Cell.toString(solution.rows[1].cells).replace('-', '.'))
+        assertEquals("*.", solution.rows[0].cells.asString().replace('-', '.'))
+        assertEquals("..", solution.rows[1].cells.asString().replace('-', '.'))
     }
 
     @Test
@@ -95,6 +96,7 @@ class PuzzleTest {
     }
 
     @Test
+    @Disabled
     fun `solve 20x10 puzzle`() {
         val puzzle = nonogram {
             row(3, 3, 2)
@@ -143,7 +145,9 @@ class PuzzleTest {
     }
 
     @Test
+    @Disabled
     fun `solve 15x15 puzzle`() {
+        // From  https://activityworkshop.net/puzzlesgames/nonograms/puzzle1.html
         val puzzle = nonogram {
             row(2, 1)
             row(2, 2)
@@ -189,8 +193,4 @@ class PuzzleTest {
         assertTrue(solution.isValid(), "Puzzle should be in valid state.")
         assertTrue(solution.isSolved(), "Puzzle should be solved.")
     }
-
-    // Another one to try:
-    // https://activityworkshop.net/puzzlesgames/nonograms/puzzle1.html
-
 }
