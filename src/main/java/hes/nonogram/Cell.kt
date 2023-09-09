@@ -11,6 +11,26 @@ class Cell(var state: State = State.UNKNOWN) {
     override fun toString(): String {
         return state.toString()
     }
+
+    companion object {
+
+        fun fromString(s: String): MutableList<Cell> {
+            val cells = mutableListOf<Cell>()
+            for (char: Char in s) {
+                if (char.isWhitespace()) {
+                    continue
+                }
+                cells.add(Cell(char))
+            }
+            return cells
+        }
+
+        fun toString(cells: List<Cell>): String {
+            return buildString {
+                cells.forEach { append(it) }
+            }
+        }
+    }
 }
 
 enum class State(private val value: Char) {
@@ -39,17 +59,4 @@ enum class State(private val value: Char) {
     }
 }
 
-fun toCells(s: String): MutableList<Cell> {
-    val cells = mutableListOf<Cell>()
-    for (char: Char in s) {
-        cells.add(Cell(char))
-    }
-    return cells
-}
-
-fun toString(cells: List<Cell>): String {
-    return buildString {
-        cells.forEach { append(it.toString()) }
-    }
-}
 

@@ -24,8 +24,8 @@ class PuzzleTest {
         assertTrue(solution.isValid(), "Puzzle should be in valid state.")
         assertTrue(solution.isSolved(), "Puzzle should be solved.")
 
-        assertEquals("*.", toString(solution.rows[0].cells).replace('-', '.'))
-        assertEquals("..", toString(solution.rows[1].cells).replace('-', '.'))
+        assertEquals("*.", Cell.toString(solution.rows[0].cells).replace('-', '.'))
+        assertEquals("..", Cell.toString(solution.rows[1].cells).replace('-', '.'))
     }
 
     @Test
@@ -192,6 +192,5 @@ class PuzzleTest {
 
     // Another one to try:
     // https://activityworkshop.net/puzzlesgames/nonograms/puzzle1.html
-
 
 }

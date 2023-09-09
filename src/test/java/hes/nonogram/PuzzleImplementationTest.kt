@@ -11,10 +11,10 @@ class PuzzleImplementationTest {
 
         val puzzle = simplePuzzle()
 
-        assertEquals("..", toString(puzzle.rows[0].cells))
-        assertEquals("..", toString(puzzle.rows[1].cells))
-        assertEquals("..", toString(puzzle.columns[0].cells))
-        assertEquals("..", toString(puzzle.columns[1].cells))
+        assertEquals("..", Cell.toString(puzzle.rows[0].cells))
+        assertEquals("..", Cell.toString(puzzle.rows[1].cells))
+        assertEquals("..", Cell.toString(puzzle.columns[0].cells))
+        assertEquals("..", Cell.toString(puzzle.columns[1].cells))
     }
 
     @Test
@@ -67,8 +67,8 @@ class PuzzleImplementationTest {
         assertEquals(2, copy.rows.size)
         assertEquals(2, copy.columns.size)
 
-        assertEquals("*.", toString(copy.rows[0].cells))
-        assertEquals("..", toString(puzzle.rows[0].cells))
+        assertEquals("*.", Cell.toString(copy.rows[0].cells))
+        assertEquals("..", Cell.toString(puzzle.rows[0].cells))
     }
 
     private fun simplePuzzle(): Puzzle {

@@ -8,14 +8,14 @@ class LineTest {
 
     @Test
     fun `string representation`() {
-        val cells = toCells(".-*")
+        val cells = Cell.fromString(".-*")
 
         assertEquals(3, cells.size)
         assertEquals(State.UNKNOWN, cells[0].state)
         assertEquals(State.EMPTY, cells[1].state)
         assertEquals(FILLED, cells[2].state)
 
-        assertEquals(".-*", toString(cells))
+        assertEquals(".-*", Cell.toString(cells))
     }
 
     @Test
@@ -97,8 +97,8 @@ class LineTest {
         val copy = line.copy()
         copy.cells[0].state = FILLED
 
-        assertEquals("*..", toString(copy.cells))
-        assertEquals("...", toString(line.cells))
+        assertEquals("*..", Cell.toString(copy.cells))
+        assertEquals("...", Cell.toString(line.cells))
     }
 
     @Test
